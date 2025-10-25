@@ -1,0 +1,106 @@
+name: Tests and Linting
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/publish.yml'
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system ruff mypy
+
+      - name: Run ruff format check
+        run: ruff format --check .
+
+      - name: Run ruff linter
+        run: ruff check .
+
+      - name: Run type checking
+        run: mypy src/ --install-types --non-interactive || true
+
+  validate-structure:
+    name: Validate Package Structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Validate pyproject.toml
+        run: |
+          uv pip install --system toml
+          python -c "import toml; toml.load('pyproject.toml')"
+
+      - name: Check required files
+        run: |
+          test -f README.md || (echo "Missing README.md" && exit 1)
+          test -f LICENSE || (echo "Missing LICENSE" && exit 1)
+          test -f pyproject.toml || (echo "Missing pyproject.toml" && exit 1)
+          test -f src/__init__.py || (echo "Missing src/__init__.py" && exit 1)
+          test -f src/server.py || (echo "Missing src/server.py" && exit 1)
+
+      - name: Test package build
+        run: |
+          uv build
+          ls -lh dist/
+
+  test-install:
+    name: Test Installation
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install package
+        run: |
+          uv pip install --system .
+
+      - name: Verify installation
+        run: |
+          python -c "import src; print(f'Version: {src.__version__}')"
+          python -c "from src.config import get_settings; print('Config module OK')"
+          python -c "from src.services import ImageService; print('Services module OK')"
+          python -c "from src.tools import generate_image_tool; print('Tools module OK')"

@@ -1,0 +1,160 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system toml packaging
+
+      - name: Determine version bump type
+        id: bump_type
+        run: |
+          # Check if manual workflow dispatch
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ inputs.version_bump }}" >> $GITHUB_OUTPUT
+          else
+            # Check commit message for version bump indicators
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            if echo "$COMMIT_MSG" | grep -iq "\[major\]"; then
+              echo "type=major" >> $GITHUB_OUTPUT
+            elif echo "$COMMIT_MSG" | grep -iq "\[minor\]"; then
+              echo "type=minor" >> $GITHUB_OUTPUT
+            else
+              echo "type=patch" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Bump version
+        id: version
+        run: |
+          python << 'EOF'
+          import toml
+          import sys
+          from packaging import version
+
+          # Read current version
+          with open('pyproject.toml', 'r') as f:
+              data = toml.load(f)
+
+          current = version.parse(data['project']['version'])
+          bump_type = "${{ steps.bump_type.outputs.type }}"
+
+          # Calculate new version
+          if bump_type == 'major':
+              new_version = f"{current.major + 1}.0.0"
+          elif bump_type == 'minor':
+              new_version = f"{current.major}.{current.minor + 1}.0"
+          else:  # patch
+              new_version = f"{current.major}.{current.minor}.{current.micro + 1}"
+
+          # Update pyproject.toml
+          data['project']['version'] = new_version
+          with open('pyproject.toml', 'w') as f:
+              toml.dump(data, f)
+
+          # Update src/__init__.py
+          with open('src/__init__.py', 'r') as f:
+              content = f.read()
+
+          content = content.replace(
+              f'__version__ = "{current}"',
+              f'__version__ = "{new_version}"'
+          )
+
+          with open('src/__init__.py', 'w') as f:
+              f.write(content)
+
+          print(f"new_version={new_version}")
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"new_version={new_version}\n")
+              f.write(f"old_version={current}\n")
+          EOF
+
+      - name: Commit version bump
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add pyproject.toml src/__init__.py
+          git commit -m "Bump version: ${{ steps.version.outputs.old_version }} → ${{ steps.version.outputs.new_version }} [skip ci]"
+          git tag -a "v${{ steps.version.outputs.new_version }}" -m "Release v${{ steps.version.outputs.new_version }}"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          tags: true
+
+      - name: Build package
+        run: |
+          uv build
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          uv pip install --system twine
+          twine upload dist/*
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.new_version }}
+          name: Release v${{ steps.version.outputs.new_version }}
+          body: |
+            ## Changes in v${{ steps.version.outputs.new_version }}
+
+            **Version bump:** ${{ steps.bump_type.outputs.type }}
+            **Previous version:** ${{ steps.version.outputs.old_version }}
+
+            ### Installation
+            ```bash
+            pip install ultimate-gemini-mcp==${{ steps.version.outputs.new_version }}
+            ```
+
+            Or with uv:
+            ```bash
+            uvx ultimate-gemini-mcp@${{ steps.version.outputs.new_version }}
+            ```
+
+            See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,13 +1,14 @@
 [project]
 name = "ultimate-gemini-mcp"
 version = "1.0.0"
-description = "Ultimate image generation MCP server unifying Gemini 2.5 Flash Image and Imagen 3/4/Ultra with advanced features"
+description = "Ultimate image generation MCP server unifying Gemini 2.5 Flash Image and Imagen 4/Fast/Ultra with advanced features"
 readme = "README.md"
 requires-python = ">=3.11"
+license = { text = "MIT" }
 authors = [
     { name = "Ultimate Gemini MCP", email = "noreply@example.com" }
 ]
-keywords = ["mcp", "gemini", "imagen", "image-generation", "ai", "google-ai"]
+keywords = ["mcp", "gemini", "imagen", "image-generation", "ai", "google-ai", "fastmcp", "claude"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -15,7 +16,15 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+
+[project.urls]
+Homepage = "https://github.com/anand-92/ultimate-image-gen-mcp"
+Repository = "https://github.com/anand-92/ultimate-image-gen-mcp"
+Issues = "https://github.com/anand-92/ultimate-image-gen-mcp/issues"
+Documentation = "https://github.com/anand-92/ultimate-image-gen-mcp/blob/main/README.md"
 
 dependencies = [
     "fastmcp>=2.11.0",
