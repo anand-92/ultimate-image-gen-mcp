@@ -117,7 +117,7 @@ async def generate_image_tool(
         if model.startswith("imagen"):
             params["number_of_images"] = number_of_images
             params["output_format"] = f"image/{output_format}"
-            params["person_generation"] = "allow_adult"  # Hard-coded to allow adults
+            params["person_generation"] = "allow_all"  # Hard-coded to allow all people
             if negative_prompt:
                 params["negative_prompt"] = negative_prompt
             if seed is not None:

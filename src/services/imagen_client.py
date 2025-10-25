@@ -82,6 +82,13 @@ class ImagenClient:
             },
         }
 
+        # Add imageSize for models that support it (Standard and Ultra, not Fast)
+        # Fast model only supports 1K, while Standard and Ultra support up to 2K
+        if model in ["imagen-4", "imagen-4-ultra"]:
+            request_body["parameters"]["imageSize"] = "2K"
+        elif model == "imagen-4-fast":
+            request_body["parameters"]["imageSize"] = "1K"
+
         # Add optional parameters
         if negative_prompt:
             request_body["instances"][0]["negativePrompt"] = negative_prompt
