@@ -7,7 +7,7 @@ A unified MCP server that combines the best features from:
 - Advanced features: batch processing, editing, templates, and more
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Ultimate Gemini MCP"
 
 from .config import get_settings
