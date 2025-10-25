@@ -90,8 +90,13 @@ class ImagenClient:
         if negative_prompt:
             request_body["instances"][0]["negativePrompt"] = negative_prompt
 
+        # Note: Seed parameter is not supported by Imagen API (as of 2025)
+        # The API returns a 400 error if seed is provided
         if seed is not None:
-            request_body["parameters"]["seed"] = seed
+            logger.warning(
+                "Seed parameter is not supported by Imagen API and will be ignored. "
+                "Images cannot be reproduced with a seed value."
+            )
 
         headers = {
             "Content-Type": "application/json",

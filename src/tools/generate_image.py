@@ -77,8 +77,21 @@ async def generate_image_tool(
 
     if person_generation:
         validate_person_generation(person_generation)
+
+        # Warn if prompt may conflict with person_generation policy
+        if person_generation == "dont_allow":
+            person_keywords = ["person", "people", "man", "woman", "child", "human", "face", "portrait", "crowd"]
+            if any(keyword in prompt.lower() for keyword in person_keywords):
+                logger.warning(
+                    f"Prompt contains person-related keywords but person_generation is set to 'dont_allow'. "
+                    f"This may result in the API blocking image generation."
+                )
+
     if seed is not None:
         validate_seed(seed)
+        logger.warning(
+            "Note: The seed parameter is not currently supported by Imagen API and will be ignored."
+        )
 
     # Get settings
     settings = get_settings()
@@ -213,7 +226,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
             use_world_knowledge: Use real-world knowledge (Gemini only)
             person_generation: Person policy: dont_allow, allow_adult, allow_all (Imagen only)
             negative_prompt: What to avoid in the image (Imagen only)
-            seed: Random seed for reproducibility (Imagen only)
+            seed: Random seed for reproducibility (NOT SUPPORTED - will be ignored)
 
         Available models:
         - gemini-2.5-flash-image (default)

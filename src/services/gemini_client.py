@@ -83,7 +83,21 @@ class GeminiClient:
 
         parts.append({"text": prompt_text})
 
-        request_body = {"contents": [{"parts": parts}]}
+        # Build generation config for image generation
+        generation_config = {
+            "responseModalities": ["Image"]
+        }
+
+        # Add aspect ratio to image config if specified
+        if aspect_ratio:
+            generation_config["imageConfig"] = {
+                "aspectRatio": aspect_ratio
+            }
+
+        request_body = {
+            "contents": [{"parts": parts}],
+            "generationConfig": generation_config
+        }
 
         headers = {
             "x-goog-api-key": self.api_key,
@@ -92,14 +106,21 @@ class GeminiClient:
 
         try:
             logger.debug(f"Sending request to {url}")
+            logger.debug(f"Request body: {request_body}")
             response = await self.client.post(url, json=request_body, headers=headers)
             response.raise_for_status()
             data = response.json()
+
+            logger.debug(f"Response status: {response.status_code}")
+            logger.debug(f"Response data: {data}")
 
             # Extract images from response
             images = self._extract_images(data)
 
             if not images:
+                logger.error(f"No images extracted from response. Response structure: {list(data.keys())}")
+                if "candidates" in data:
+                    logger.error(f"Candidates: {data['candidates']}")
                 raise APIError("No image data found in Gemini API response")
 
             return {"images": images, "model": model, "response": data}
@@ -170,10 +191,13 @@ class GeminiClient:
                 content = candidate.get("content", {})
                 parts = content.get("parts", [])
                 for part in parts:
-                    if "inline_data" in part:
-                        image_data = part["inline_data"].get("data")
+                    # Handle both inline_data and inlineData formats
+                    inline_data = part.get("inline_data") or part.get("inlineData")
+                    if inline_data:
+                        image_data = inline_data.get("data")
                         if image_data:
                             images.append(image_data)
+                            logger.debug(f"Extracted image data of length: {len(image_data)}")
         except Exception as e:
             logger.warning(f"Error extracting images from response: {e}")
 
