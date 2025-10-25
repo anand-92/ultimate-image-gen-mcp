@@ -1,88 +1,143 @@
 # CLAUDE.md
 
-Development documentation for Claude Code when working with the Ultimate Gemini MCP server.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-This is the **Ultimate Gemini MCP Server** - a unified image generation server that combines the best features from three excellent MCP servers:
+**Ultimate Gemini MCP Server** - A production-ready FastMCP server unifying Google's Gemini 2.5 Flash Image and Imagen 4/Fast/Ultra APIs into a single, developer-friendly interface with AI-powered prompt enhancement.
 
-1. **mcp-image** (TypeScript): Intelligent prompt enhancement using Gemini Flash, image editing capabilities
-2. **nanobanana-mcp-server** (Python/FastMCP): Production-ready architecture, modular design
-3. **gemini-imagen-mcp-server** (TypeScript): Imagen 3/4/Ultra support, batch processing, advanced controls
+This synthesizes features from three excellent MCP servers:
+- **mcp-image** (TypeScript): Prompt enhancement concept
+- **nanobanana-mcp-server** (Python/FastMCP): Architecture patterns
+- **gemini-imagen-mcp-server** (TypeScript): Imagen integration
+
+## Development Commands
+
+### Setup and Installation
+```bash
+# Install dependencies (required before development)
+uv sync --all-extras
+
+# Install from source
+uv sync
+
+# Run locally with dev mode (hot-reload enabled)
+fastmcp dev src.server:create_app
+
+# Or run directly
+python -m src.server
+```
+
+### Testing and Quality
+```bash
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=src --cov-report=html
+
+# Type checking
+mypy src/
+
+# Linting (check only)
+ruff check src/
+
+# Auto-format code
+ruff format src/
+
+# Run all quality checks
+ruff check src/ && ruff format src/ && mypy src/ && pytest
+```
+
+### Environment Setup
+```bash
+# Required: Set API key
+export GEMINI_API_KEY=your_key_here
+
+# Optional: Enable debug logging
+export LOG_LEVEL=DEBUG
+
+# Optional: Change output directory
+export OUTPUT_DIR=/path/to/output
+```
 
 ## Architecture
 
-### Core Design Principles
+### Core Design Pattern: Unified API with Dual Backends
 
-1. **Unified API**: Single interface supporting both Gemini and Imagen models
-2. **Automatic Model Detection**: Parameters automatically adapt to the selected model
-3. **Production Ready**: Comprehensive error handling, logging, and validation
-4. **Modular Architecture**: Clear separation of concerns for maintainability
+The server presents a **single consistent interface** (`ImageService`) that routes to either Gemini or Imagen based on the model name:
 
-### Directory Structure
-
-```
-ultimate-gemini-mcp/
-├── src/
-│   ├── config/              # Configuration and constants
-│   │   ├── __init__.py
-│   │   ├── constants.py     # Model definitions, endpoints, limits
-│   │   └── settings.py      # Pydantic settings management
-│   ├── core/                # Core functionality
-│   │   ├── __init__.py
-│   │   ├── exceptions.py    # Custom exception hierarchy
-│   │   └── validation.py    # Input validation functions
-│   ├── services/            # Business logic services
-│   │   ├── __init__.py
-│   │   ├── gemini_client.py     # Gemini 2.5 Flash Image API client
-│   │   ├── imagen_client.py     # Imagen 3/4/Ultra API client
-│   │   ├── prompt_enhancer.py   # AI prompt enhancement
-│   │   └── image_service.py     # Unified image service
-│   ├── tools/               # MCP tools
-│   │   ├── __init__.py
-│   │   ├── generate_image.py    # Main image generation tool
-│   │   └── batch_generate.py    # Batch processing tool
-│   └── server.py            # FastMCP server setup and entry point
-├── pyproject.toml           # Project dependencies and configuration
-├── .env.example             # Example environment configuration
-├── README.md                # User documentation
-└── CLAUDE.md                # This file - developer documentation
-```
-
-## Key Components
-
-### 1. API Clients
-
-#### GeminiClient (`services/gemini_client.py`)
-
-Handles Gemini 2.5 Flash Image API using the `generateContent` endpoint:
-- Image generation with prompt
-- Image editing with input_image
-- Text generation for prompt enhancement
-- Base64 image data handling
-
-**API Format** (from doc.md):
 ```python
+# ImageService automatically routes based on model
+await image_service.generate(
+    prompt="a cat",
+    model="gemini-2.5-flash-image"  # → GeminiClient
+)
+
+await image_service.generate(
+    prompt="a cat",
+    model="imagen-4-ultra"  # → ImagenClient
+)
+```
+
+**Key insight:** The model name is the only routing signal. All other parameters are context-dependent and ignored if not applicable to the chosen API.
+
+### Module Responsibilities
+
+**`config/`** - Settings and constants
+- `constants.py`: Model lists, API endpoints, limits (single source of truth)
+- `settings.py`: Pydantic settings with environment variable binding
+
+**`core/`** - Framework-agnostic utilities
+- `exceptions.py`: Custom exception hierarchy for error categorization
+- `validation.py`: Input validation functions (called before API requests)
+
+**`services/`** - Business logic layer
+- `gemini_client.py`: Gemini API via `generateContent` endpoint
+- `imagen_client.py`: Imagen API via `predict` endpoint
+- `prompt_enhancer.py`: Uses Gemini Flash to enhance prompts
+- `image_service.py`: **Orchestrator** that unifies both APIs
+
+**`tools/`** - MCP tool definitions
+- `generate_image.py`: Main tool, handles all parameters
+- `batch_generate.py`: Parallel processing wrapper
+
+**`server.py`** - FastMCP initialization
+- Creates app via `create_app()` factory function
+- Registers tools and resources
+- Entry point for both `python -m src.server` and `uvx`
+
+### Data Flow for Image Generation
+
+1. **MCP Tool** (`generate_image`) receives user request
+2. **Validation** (`core/validation.py`) checks all inputs
+3. **ImageService** determines Gemini vs Imagen from model name
+4. **(Optional) PromptEnhancer** improves prompt using Gemini Flash
+5. **API Client** (GeminiClient or ImagenClient) calls Google API
+6. **ImageResult** objects created with metadata
+7. Images saved to disk with descriptive filenames
+8. JSON response returned to MCP client
+
+### API Endpoint Differences (Critical!)
+
+**Gemini 2.5 Flash Image:**
+```python
+# Uses generateContent endpoint
 POST /v1beta/models/{model}:generateContent
 {
   "contents": [{
     "parts": [
-      {"inline_data": {"mime_type": "image/png", "data": "base64..."}},  # Optional
+      {"inline_data": {"mime_type": "image/png", "data": "base64..."}},  # Optional for editing
       {"text": "prompt"}
     ]
   }]
 }
+# Images returned in: response.candidates[0].content.parts[].inline_data.data
 ```
 
-#### ImagenClient (`services/imagen_client.py`)
-
-Handles Imagen 4/Fast/Ultra API using the `predict` endpoint:
-- Multiple model support (imagen-4, imagen-4-fast, imagen-4-ultra)
-- Advanced parameters: negative_prompt, seed, person_generation
-- Aspect ratio and output format control
-
-**API Format** (from doc.md):
+**Imagen 4/Fast/Ultra:**
 ```python
+# Uses predict endpoint
 POST /v1beta/{model}:predict?key={api_key}
 {
   "instances": [{"prompt": "...", "negativePrompt": "..."}],
@@ -93,296 +148,243 @@ POST /v1beta/{model}:predict?key={api_key}
     "seed": 42
   }
 }
+# Images returned in: predictions[].bytesBase64Encoded
 ```
 
-### 2. Prompt Enhancement
+**Why this matters:** When debugging API issues or adding features, you must check which endpoint you're working with. They have completely different request/response structures.
 
-The `PromptEnhancer` service uses Gemini Flash to automatically improve prompts:
+## Key Implementation Details
 
-**Features:**
-- Adds photographic/artistic details
-- Improves composition descriptions
-- Enhances lighting and material descriptions
-- Context-aware enhancements based on generation parameters
-
-**Example:**
-```
-Input:  "a cat wearing a space helmet"
-Output: "A photorealistic portrait of a domestic tabby cat wearing a
-         futuristic space helmet, close-up composition, warm studio
-         lighting, detailed fur texture, reflective helmet visor..."
-```
-
-### 3. Unified Image Service
-
-The `ImageService` (`services/image_service.py`) provides a consistent interface:
-
+### Model Detection Logic (services/image_service.py:126-130)
 ```python
-async def generate(
-    prompt: str,
-    model: str | None = None,
-    enhance_prompt: bool = True,
-    **kwargs
-) -> list[ImageResult]
+is_gemini = model in GEMINI_MODELS  # Check against constants.py
+is_imagen = model in IMAGEN_MODELS
+# This determines which _generate_with_* method is called
 ```
 
-- Automatically detects which API to use based on model
-- Handles prompt enhancement if enabled
-- Returns list of `ImageResult` objects with metadata
-- Manages client lifecycle
+### Prompt Enhancement Flow
+- Uses `gemini-flash-latest` (non-image model) for text generation
+- Enhancement is **optional** and **gracefully degrades** on failure
+- Context passed includes: aspect_ratio, is_editing, character_consistency flags
+- Original prompt preserved in ImageResult.metadata for comparison
 
-### 4. Tools
+### Parameter Routing
+Gemini-only: `input_image`, `maintainCharacterConsistency`, `blendImages`, `useWorldKnowledge`
+Imagen-only: `negative_prompt`, `seed`, `person_generation`
 
-#### generate_image Tool
+**Implementation:** tools/generate_image.py conditionally adds parameters based on model type (lines 112-127).
 
-Main tool supporting all features:
-- Both Gemini and Imagen models
-- Optional prompt enhancement
-- Gemini-specific: image editing, character consistency, blending
-- Imagen-specific: negative prompts, seeds, person controls
-- Automatic file saving with descriptive names
+### Filename Generation Strategy
+Format: `{model}_{timestamp}_{prompt_snippet}_{index}.png`
+- Timestamp: `%Y%m%d_%H%M%S`
+- Prompt snippet: First 50 chars, sanitized (alphanumeric + spaces/dashes)
+- Index: Only added for multi-image generations (e.g., `_2`, `_3`)
 
-#### batch_generate Tool
+## Common Development Tasks
 
-Efficient parallel processing:
-- Processes multiple prompts in configurable batches
-- Shared parameters across all generations
-- Individual error handling
-- Progress tracking
-
-## Development Guidelines
-
-### Adding New Features
-
-1. **New API Parameter:**
-   - Add to constants if it's a new option
-   - Add validation in `core/validation.py`
-   - Add to appropriate client method
-   - Add to tool parameters
-   - Update documentation
-
-2. **New Model:**
-   - Add to `GEMINI_MODELS` or `IMAGEN_MODELS` in `constants.py`
-   - No other changes needed (automatic detection)
-
-3. **New Tool:**
-   - Create in `tools/` directory
-   - Implement tool function
-   - Create registration function
-   - Register in `server.py`
-
-### Testing
-
-```bash
-# Install development dependencies
-uv sync --all-extras
-
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=src --cov-report=html
-
-# Type checking
-mypy src/
-
-# Linting and formatting
-ruff check src/
-ruff format src/
-```
-
-### Running Locally
-
-```bash
-# Set up environment
-export GEMINI_API_KEY=your_key_here
-
-# Run with FastMCP dev mode
-fastmcp dev src.server:create_app
-
-# Or run directly
-python -m src.server
-```
-
-### Debugging
-
-```bash
-# Enable debug logging
-export LOG_LEVEL=DEBUG
-
-# Run server
-python -m src.server
-```
-
-## API Integration Notes
-
-### According to doc.md (Google's Official Documentation):
-
-1. **Gemini 2.5 Flash Image**:
-   - Uses `generateContent` endpoint
-   - Images returned in response as inline_data
-   - Supports text + image input for editing
-   - SynthID watermark included automatically
-
-2. **Imagen Models**:
-   - Uses `predict` endpoint
-   - Images returned in `predictions[].bytesBase64Encoded`
-   - Advanced parameters: negative prompts, seeds
-   - SynthID watermark included automatically
-
-3. **Best Practices** (from doc.md):
-   - Be hyper-specific in prompts
-   - Provide context and intent
-   - Iterate and refine progressively
-   - Use photographic/cinematic terminology
-   - Use semantic negative prompts (for Imagen)
-
-## Configuration Management
-
-### Settings Loading Priority:
-
-1. Environment variables
-2. `.env` file in working directory
-3. Default values in settings classes
-
-### Key Settings:
-
-- `GEMINI_API_KEY`: Required API key
-- `OUTPUT_DIR`: Where images are saved (default: generated_images/)
-- `ENABLE_PROMPT_ENHANCEMENT`: Enable/disable enhancement (default: true)
-- `DEFAULT_GEMINI_MODEL`: Default Gemini model
-- `DEFAULT_IMAGEN_MODEL`: Default Imagen model
-
-## Error Handling
-
-### Exception Hierarchy:
-
-```
-UltimateGeminiError (base)
-├── ConfigurationError (startup, settings)
-├── ValidationError (input validation)
-├── APIError (API requests)
-│   ├── AuthenticationError (401/403)
-│   ├── RateLimitError (429)
-│   └── ContentPolicyError (safety blocks)
-├── ImageProcessingError (image operations)
-└── FileOperationError (file I/O)
-```
-
-### Error Handling Pattern:
-
-1. **Validation**: Fail fast with clear messages
-2. **API Errors**: Categorize and provide user-friendly messages
-3. **Logging**: Detailed error context for debugging
-4. **Recovery**: Graceful degradation (e.g., skip enhancement on failure)
-
-## Performance Considerations
-
-1. **Prompt Enhancement**: Adds ~2-5 seconds but significantly improves results
-2. **Batch Processing**: Configurable parallelism (default: 8 concurrent requests)
-3. **Image Size**: Gemini images typically larger than Imagen
-4. **Timeouts**: 60s default, increase for multiple images
-
-## Common Patterns
-
-### Adding a New Tool Parameter:
-
+### Adding a New Model
 ```python
-# 1. Add to tool function signature
+# 1. Add to constants.py
+GEMINI_MODELS = {
+    "gemini-new-model": "gemini-new-model",
+}
+# or
+IMAGEN_MODELS = {
+    "imagen-5": "models/imagen-5.0-generate-001",
+}
+
+# That's it! Auto-detection handles the rest.
+```
+
+### Adding a New Tool Parameter
+
+**If parameter applies to both APIs:**
+```python
+# 1. Add to tool signature (tools/generate_image.py:27)
 async def generate_image_tool(
     prompt: str,
-    new_parameter: str | None = None,  # Add here
+    new_param: str | None = None,
     ...
 ):
     # 2. Add validation
-    if new_parameter:
-        validate_new_parameter(new_parameter)
+    if new_param:
+        validate_new_param(new_param)  # Create in core/validation.py
 
-    # 3. Use in service call
-    results = await image_service.generate(
-        prompt=prompt,
-        new_parameter=new_parameter,
-        ...
-    )
+    # 3. Add to params dict before generate()
+    params["new_param"] = new_param
+
+    # 4. Update docstring
 ```
 
-### Adding a New Service:
-
+**If parameter is API-specific:**
 ```python
-# 1. Create service class
-class NewService:
-    def __init__(self, config):
-        self.config = config
-
-    async def do_something(self):
-        pass
-
-# 2. Add to image service as needed
-# 3. Register in server.py if exposing as tool
+# Add conditional logic like lines 120-127 in generate_image.py
+if model.startswith("imagen"):  # or check: model in IMAGEN_MODELS
+    params["imagen_only_param"] = value
 ```
 
-## Deployment
+### Adding Validation
+```python
+# In core/validation.py
+def validate_new_feature(value: str) -> None:
+    """Validate new feature input."""
+    if not value:
+        raise ValidationError("Value cannot be empty")
+    if len(value) > 100:
+        raise ValidationError("Value too long (max 100 chars)")
+```
 
-### Production Checklist:
+**Pattern:** All validation functions raise `ValidationError` with user-friendly messages. Never return booleans.
 
-- [ ] Set `LOG_LEVEL=INFO` (not DEBUG)
-- [ ] Configure `OUTPUT_DIR` to persistent storage
-- [ ] Set appropriate `REQUEST_TIMEOUT`
-- [ ] Configure `MAX_BATCH_SIZE` based on load
-- [ ] Monitor API quota usage
-- [ ] Set up error alerting
-- [ ] Configure log aggregation
+### Handling New API Errors
+```python
+# In services/gemini_client.py or imagen_client.py
+if response.status == 403:
+    raise AuthenticationError("API key invalid or expired")
+elif response.status == 429:
+    raise RateLimitError("Rate limit exceeded, try again later")
+elif response.status == 400 and "safety" in error_msg:
+    raise ContentPolicyError("Content blocked by safety filters")
+else:
+    raise APIError(f"API request failed: {error_msg}", status_code=response.status)
+```
 
-### FastMCP Deployment:
+**Pattern:** Use specific exception types from `core/exceptions.py` for proper error categorization.
 
+## Testing Strategy
+
+### Unit Tests (markers: `@pytest.mark.unit`)
+- Validation functions
+- Filename sanitization
+- Settings loading
+- Exception hierarchy
+
+### Integration Tests (markers: `@pytest.mark.integration`)
+- API client methods (with mocked HTTP)
+- ImageService orchestration
+- Tool functions end-to-end
+
+### Network Tests (markers: `@pytest.mark.network`)
+- Real API calls (requires `GEMINI_API_KEY`)
+- Mark with `@pytest.mark.skipif(not os.getenv("GEMINI_API_KEY"))`
+
+### Run Specific Test Markers
 ```bash
-# Direct execution
-python -m src.server
-
-# With uv
-uvx ultimate-gemini-mcp
-
-# Docker (create Dockerfile as needed)
-# Use Python 3.11+ base image
-# Install dependencies with uv
-# Run server.py as entrypoint
+pytest -m unit              # Fast, no network
+pytest -m integration       # Medium speed
+pytest -m network           # Slow, needs API key
 ```
 
-## Troubleshooting
+## Configuration Loading Priority
 
-### "No image data found in response"
+1. **Environment variables** (highest priority)
+2. **`.env` file** in working directory
+3. **Default values** in `config/settings.py`
 
-- Check API key validity
-- Verify model name is correct
-- Check if prompt was blocked by safety filters
-- Review API response in debug logs
+Example:
+```python
+# settings.py (simplified)
+class APISettings(BaseSettings):
+    gemini_api_key: str = Field(default="")  # Step 3: default
 
-### "Prompt enhancement failed, using original"
+    model_config = SettingsConfigDict(
+        env_file=".env",  # Step 2: .env file
+        env_prefix="",
+    )
 
-- Normal behavior - server falls back gracefully
-- Check Gemini Flash API access
-- Verify API key has sufficient quota
+# Step 1: export GEMINI_API_KEY=... (highest priority)
+```
 
-### Import errors
+## Error Handling Philosophy
 
-- Run `uv sync` to install dependencies
-- Verify Python version >= 3.11
-- Check PYTHONPATH if running directly
+**Fail fast with clear messages** - Invalid inputs should raise `ValidationError` before making API calls.
 
-## Contributing
+**Graceful degradation** - Prompt enhancement failures don't stop image generation:
+```python
+try:
+    prompt = await enhancer.enhance(prompt)
+except Exception as e:
+    logger.warning(f"Enhancement failed: {e}")
+    # Continue with original prompt
+```
 
-When adding features:
+**User-friendly error messages** - API errors are categorized (Auth, RateLimit, ContentPolicy) so tools can provide actionable feedback.
 
-1. Follow existing code structure
-2. Add appropriate validation
-3. Include error handling
-4. Update documentation
-5. Add tests if possible
-6. Follow ruff formatting (`ruff format .`)
+## Performance Characteristics
+
+- **Prompt Enhancement:** Adds 2-5 seconds latency (optional, enabled by default)
+- **Batch Processing:** Default 8 concurrent requests (`MAX_BATCH_SIZE`)
+- **Timeouts:** 60s for generation, 30s for enhancement
+- **Image Size:** Gemini images typically 2-5MB, Imagen 1-3MB
+
+**Optimization tip:** Disable enhancement for faster iteration: `enhance_prompt=False`
+
+## Deployment Considerations
+
+### Production Checklist
+- Set `LOG_LEVEL=INFO` (default DEBUG is too verbose)
+- Configure `OUTPUT_DIR` to persistent storage (not temp directory)
+- Monitor API quota (especially if enhancement enabled - uses 2 requests per generation)
+- Set `REQUEST_TIMEOUT` based on expected image complexity (default 60s)
+
+### Running as MCP Server
+```bash
+# Via Claude Desktop config (claude_desktop_config.json)
+{
+  "mcpServers": {
+    "ultimate-gemini": {
+      "command": "uvx",
+      "args": ["ultimate-gemini-mcp"],
+      "env": {
+        "GEMINI_API_KEY": "your-key"
+      }
+    }
+  }
+}
+
+# Via Claude Code
+claude mcp add ultimate-gemini --env GEMINI_API_KEY=key -- uvx ultimate-gemini-mcp
+```
+
+## Troubleshooting Guide
+
+**"No image data found in response"**
+- Debug: Set `LOG_LEVEL=DEBUG` and check logs for actual API response
+- Check: Model name matches constants.py exactly
+- Check: Prompt not blocked (look for safety filter messages)
+
+**"Prompt enhancement failed, using original"**
+- This is expected behavior when enhancement service is unavailable
+- Verify: API key has quota for `gemini-flash-latest` model
+- Not critical: Image generation continues with original prompt
+
+**Import errors after changes**
+- Run `uv sync` to refresh dependencies
+- Ensure Python >= 3.11 (`python --version`)
+- Check for circular imports between services
+
+**Type errors from mypy**
+- Most common: Missing type annotations on new functions
+- Fix: Add `-> None` or `-> dict[str, Any]` return types
+- Settings: See `pyproject.toml` [tool.mypy] for enabled checks
+
+## Code Style Guidelines
+
+**Enforced by ruff:**
+- Line length: 100 characters
+- Import sorting: isort style
+- Type hints: Required for all public functions
+
+**Run before committing:**
+```bash
+ruff format src/ && ruff check src/ && mypy src/
+```
+
+**Settings:** See `pyproject.toml` [tool.ruff] and [tool.mypy] sections
 
 ## Resources
 
-- [Google AI Studio](https://makersuite.google.com/app/apikey) - Get API keys
-- [Gemini API Docs](https://ai.google.dev/gemini-api/docs) - Official API documentation
-- [FastMCP Documentation](https://github.com/jlowin/fastmcp) - FastMCP framework
-- [Model Context Protocol](https://modelcontextprotocol.io/) - MCP specification
+- **API Keys:** [Google AI Studio](https://makersuite.google.com/app/apikey)
+- **Gemini Docs:** [ai.google.dev/gemini-api/docs](https://ai.google.dev/gemini-api/docs)
+- **FastMCP:** [github.com/jlowin/fastmcp](https://github.com/jlowin/fastmcp)
+- **MCP Spec:** [modelcontextprotocol.io](https://modelcontextprotocol.io/)
