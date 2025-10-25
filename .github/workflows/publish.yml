@@ -63,6 +63,7 @@ jobs:
         id: version
         run: |
           python << 'EOF'
+          import os
           import toml
           import sys
           from packaging import version
