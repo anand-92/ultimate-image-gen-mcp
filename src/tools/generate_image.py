@@ -3,6 +3,7 @@ Image generation tool supporting both Gemini and Imagen models.
 """
 
 import base64
+import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -240,7 +241,6 @@ def register_generate_image_tool(mcp_server: Any) -> None:
                 seed=seed,
             )
 
-            import json
             return json.dumps(result, indent=2)
 
         except Exception as e:
