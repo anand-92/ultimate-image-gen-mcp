@@ -5,7 +5,6 @@ Input validation utilities.
 import base64
 import re
 from pathlib import Path
-from typing import Any
 
 from ..config.constants import (
     ALL_MODELS,
@@ -14,7 +13,6 @@ from ..config.constants import (
     MAX_IMAGES_PER_REQUEST,
     MAX_NEGATIVE_PROMPT_LENGTH,
     MAX_PROMPT_LENGTH,
-    PERSON_GENERATION_OPTIONS,
 )
 from .exceptions import ValidationError
 
@@ -50,9 +48,7 @@ def validate_aspect_ratio(aspect_ratio: str) -> None:
     """Validate aspect ratio."""
     if aspect_ratio not in ASPECT_RATIOS:
         available = ", ".join(ASPECT_RATIOS)
-        raise ValidationError(
-            f"Invalid aspect ratio '{aspect_ratio}'. Available: {available}"
-        )
+        raise ValidationError(f"Invalid aspect ratio '{aspect_ratio}'. Available: {available}")
 
 
 def validate_number_of_images(num: int) -> None:
@@ -61,27 +57,14 @@ def validate_number_of_images(num: int) -> None:
         raise ValidationError(f"Number of images must be at least 1, got {num}")
 
     if num > MAX_IMAGES_PER_REQUEST:
-        raise ValidationError(
-            f"Number of images exceeds maximum: {num} > {MAX_IMAGES_PER_REQUEST}"
-        )
+        raise ValidationError(f"Number of images exceeds maximum: {num} > {MAX_IMAGES_PER_REQUEST}")
 
 
 def validate_image_format(format_str: str) -> None:
     """Validate image format."""
     if format_str.lower() not in IMAGE_FORMATS:
         available = ", ".join(IMAGE_FORMATS.keys())
-        raise ValidationError(
-            f"Invalid image format '{format_str}'. Available: {available}"
-        )
-
-
-def validate_person_generation(option: str) -> None:
-    """Validate person generation option."""
-    if option not in PERSON_GENERATION_OPTIONS:
-        available = ", ".join(PERSON_GENERATION_OPTIONS)
-        raise ValidationError(
-            f"Invalid person generation option '{option}'. Available: {available}"
-        )
+        raise ValidationError(f"Invalid image format '{format_str}'. Available: {available}")
 
 
 def validate_seed(seed: int | None) -> None:
@@ -98,7 +81,7 @@ def validate_file_path(path: str) -> Path:
     try:
         file_path = Path(path).resolve()
     except Exception as e:
-        raise ValidationError(f"Invalid file path '{path}': {e}")
+        raise ValidationError(f"Invalid file path '{path}': {e}") from e
 
     if not file_path.exists():
         raise ValidationError(f"File does not exist: {file_path}")
@@ -120,7 +103,7 @@ def validate_base64_image(data: str) -> None:
         if len(decoded) == 0:
             raise ValidationError("Decoded image data is empty")
     except Exception as e:
-        raise ValidationError(f"Invalid base64 image data: {e}")
+        raise ValidationError(f"Invalid base64 image data: {e}") from e
 
 
 def validate_prompts_list(prompts: list[str]) -> None:
@@ -137,7 +120,7 @@ def validate_prompts_list(prompts: list[str]) -> None:
         try:
             validate_prompt(prompt)
         except ValidationError as e:
-            raise ValidationError(f"Invalid prompt at index {i}: {e}")
+            raise ValidationError(f"Invalid prompt at index {i}: {e}") from e
 
 
 def sanitize_filename(filename: str) -> str:

@@ -4,7 +4,6 @@ Configuration settings for the Ultimate Gemini MCP server.
 
 import os
 from pathlib import Path
-from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -81,9 +80,7 @@ class APIConfig(BaseSettings):
     enable_prompt_enhancement: bool = Field(
         default=True, description="Enable automatic prompt enhancement"
     )
-    enable_batch_processing: bool = Field(
-        default=True, description="Enable batch processing"
-    )
+    enable_batch_processing: bool = Field(default=True, description="Enable batch processing")
 
     # Request settings
     request_timeout: int = Field(default=DEFAULT_TIMEOUT, description="API request timeout")
@@ -104,9 +101,7 @@ class APIConfig(BaseSettings):
             self.gemini_api_key = os.getenv("GOOGLE_API_KEY", "")
 
         if not self.gemini_api_key:
-            raise ValueError(
-                "GEMINI_API_KEY or GOOGLE_API_KEY environment variable is required"
-            )
+            raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY environment variable is required")
 
     @classmethod
     def from_env(cls) -> "APIConfig":
@@ -132,7 +127,7 @@ class Settings:
 
 
 # Global settings instance (lazy initialization)
-_settings: Optional[Settings] = None
+_settings: Settings | None = None
 
 
 def get_settings() -> Settings:

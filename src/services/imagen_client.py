@@ -73,17 +73,13 @@ class ImagenClient:
 
         # Build request body according to Imagen API
         request_body: dict[str, Any] = {
-            "instances": [
-                {
-                    "prompt": prompt
-                }
-            ],
+            "instances": [{"prompt": prompt}],
             "parameters": {
                 "outputMimeType": output_format,
                 "sampleCount": number_of_images,
                 "personGeneration": person_generation,
-                "aspectRatio": aspect_ratio
-            }
+                "aspectRatio": aspect_ratio,
+            },
         }
 
         # Add optional parameters
@@ -106,9 +102,7 @@ class ImagenClient:
             logger.debug(f"Sending request to {url}")
             # Add API key as query parameter
             response = await self.client.post(
-                f"{url}?key={self.api_key}",
-                json=request_body,
-                headers=headers
+                f"{url}?key={self.api_key}", json=request_body, headers=headers
             )
             response.raise_for_status()
             data = response.json()
@@ -119,17 +113,13 @@ class ImagenClient:
             if not images:
                 raise APIError("No image data found in Imagen API response")
 
-            return {
-                "images": images,
-                "model": model,
-                "response": data
-            }
+            return {"images": images, "model": model, "response": data}
 
         except httpx.HTTPStatusError as e:
             self._handle_http_error(e)
         except Exception as e:
             logger.error(f"Imagen API request failed: {e}")
-            raise APIError(f"Imagen API request failed: {e}")
+            raise APIError(f"Imagen API request failed: {e}") from e
 
     def _extract_images(self, response_data: dict[str, Any]) -> list[str]:
         """Extract base64 image data from Imagen API response."""
@@ -156,23 +146,21 @@ class ImagenClient:
 
         if status_code == 401 or status_code == 403:
             raise AuthenticationError(
-                "Authentication failed. Please check your API key.",
-                status_code=status_code
+                "Authentication failed. Please check your API key.", status_code=status_code
             )
         elif status_code == 429:
             raise RateLimitError(
-                "Rate limit exceeded. Please try again later.",
-                status_code=status_code
+                "Rate limit exceeded. Please try again later.", status_code=status_code
             )
         elif status_code == 400 and "SAFETY" in error_text.upper():
             raise ContentPolicyError(
                 "Content was blocked by safety filters. Please modify your prompt.",
-                status_code=status_code
+                status_code=status_code,
             )
         else:
             raise APIError(
                 f"API request failed with status {status_code}: {error_text}",
-                status_code=status_code
+                status_code=status_code,
             )
 
     async def close(self) -> None:

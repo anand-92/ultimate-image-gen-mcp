@@ -1,8 +1,8 @@
 """Services module for Ultimate Gemini MCP."""
 
 from .gemini_client import GeminiClient
-from .imagen_client import ImagenClient
 from .image_service import ImageResult, ImageService
+from .imagen_client import ImagenClient
 from .prompt_enhancer import PromptEnhancer, create_prompt_enhancer
 
 __all__ = [

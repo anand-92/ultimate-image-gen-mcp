@@ -9,8 +9,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from PIL import Image
-
 from ..config.constants import GEMINI_MODELS, IMAGEN_MODELS
 from ..core import sanitize_filename
 from ..core.exceptions import ImageProcessingError
@@ -30,7 +28,7 @@ class ImageResult:
         prompt: str,
         model: str,
         index: int = 0,
-        metadata: dict[str, Any] | None = None
+        metadata: dict[str, Any] | None = None,
     ):
         self.image_data = image_data  # Base64-encoded
         self.prompt = prompt
@@ -53,7 +51,7 @@ class ImageResult:
             logger.info(f"Saved image to {output_path}")
             return output_path
         except Exception as e:
-            raise ImageProcessingError(f"Failed to save image: {e}")
+            raise ImageProcessingError(f"Failed to save image: {e}") from e
 
     def _generate_filename(self) -> str:
         """Generate descriptive filename."""
@@ -71,13 +69,7 @@ class ImageResult:
 class ImageService:
     """Unified service for image generation using Gemini or Imagen."""
 
-    def __init__(
-        self,
-        api_key: str,
-        *,
-        enable_enhancement: bool = True,
-        timeout: int = 60
-    ):
+    def __init__(self, api_key: str, *, enable_enhancement: bool = True, timeout: int = 60):
         """
         Initialize image service.
 
@@ -100,12 +92,7 @@ class ImageService:
             self.prompt_enhancer = PromptEnhancer(self.gemini_client)
 
     async def generate(
-        self,
-        prompt: str,
-        *,
-        model: str | None = None,
-        enhance_prompt: bool = True,
-        **kwargs: Any
+        self, prompt: str, *, model: str | None = None, enhance_prompt: bool = True, **kwargs: Any
     ) -> list[ImageResult]:
         """
         Generate images using the appropriate API.
@@ -136,8 +123,7 @@ class ImageService:
         if enhance_prompt and self.enable_enhancement and self.prompt_enhancer:
             try:
                 result = await self.prompt_enhancer.enhance_prompt(
-                    prompt,
-                    context=enhancement_context
+                    prompt, context=enhancement_context
                 )
                 prompt = result["enhanced_prompt"]
                 logger.info(f"Prompt enhanced: {len(original_prompt)} -> {len(prompt)} chars")
@@ -151,18 +137,10 @@ class ImageService:
             return await self._generate_with_imagen(prompt, model, original_prompt, kwargs)
 
     async def _generate_with_gemini(
-        self,
-        prompt: str,
-        model: str,
-        original_prompt: str,
-        params: dict[str, Any]
+        self, prompt: str, model: str, original_prompt: str, params: dict[str, Any]
     ) -> list[ImageResult]:
         """Generate images using Gemini API."""
-        response = await self.gemini_client.generate_image(
-            prompt=prompt,
-            model=model,
-            **params
-        )
+        response = await self.gemini_client.generate_image(prompt=prompt, model=model, **params)
 
         images = response["images"]
         results = []
@@ -173,29 +151,17 @@ class ImageService:
                 prompt=original_prompt,
                 model=model,
                 index=i,
-                metadata={
-                    "enhanced_prompt": prompt,
-                    "api": "gemini",
-                    **params
-                }
+                metadata={"enhanced_prompt": prompt, "api": "gemini", **params},
             )
             results.append(result)
 
         return results
 
     async def _generate_with_imagen(
-        self,
-        prompt: str,
-        model: str,
-        original_prompt: str,
-        params: dict[str, Any]
+        self, prompt: str, model: str, original_prompt: str, params: dict[str, Any]
     ) -> list[ImageResult]:
         """Generate images using Imagen API."""
-        response = await self.imagen_client.generate_image(
-            prompt=prompt,
-            model=model,
-            **params
-        )
+        response = await self.imagen_client.generate_image(prompt=prompt, model=model, **params)
 
         images = response["images"]
         results = []
@@ -206,11 +172,7 @@ class ImageService:
                 prompt=original_prompt,
                 model=model,
                 index=i,
-                metadata={
-                    "enhanced_prompt": prompt,
-                    "api": "imagen",
-                    **params
-                }
+                metadata={"enhanced_prompt": prompt, "api": "imagen", **params},
             )
             results.append(result)
 

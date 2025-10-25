@@ -3,7 +3,6 @@ Gemini API client for Gemini 2.5 Flash Image generation.
 Uses the generateContent API endpoint per Google's documentation.
 """
 
-import base64
 import logging
 from typing import Any
 
@@ -69,12 +68,7 @@ class GeminiClient:
 
         # Add input image if provided (for editing)
         if input_image:
-            parts.append({
-                "inline_data": {
-                    "mime_type": "image/png",
-                    "data": input_image
-                }
-            })
+            parts.append({"inline_data": {"mime_type": "image/png", "data": input_image}})
 
         # Add text prompt (include aspect ratio hint if specified)
         prompt_text = prompt
@@ -84,20 +78,13 @@ class GeminiClient:
         parts.append({"text": prompt_text})
 
         # Build generation config for image generation
-        generation_config = {
-            "responseModalities": ["Image"]
-        }
+        generation_config = {"responseModalities": ["Image"]}
 
         # Add aspect ratio to image config if specified
         if aspect_ratio:
-            generation_config["imageConfig"] = {
-                "aspectRatio": aspect_ratio
-            }
+            generation_config["imageConfig"] = {"aspectRatio": aspect_ratio}
 
-        request_body = {
-            "contents": [{"parts": parts}],
-            "generationConfig": generation_config
-        }
+        request_body = {"contents": [{"parts": parts}], "generationConfig": generation_config}
 
         headers = {
             "x-goog-api-key": self.api_key,
@@ -118,7 +105,9 @@ class GeminiClient:
             images = self._extract_images(data)
 
             if not images:
-                logger.error(f"No images extracted from response. Response structure: {list(data.keys())}")
+                logger.error(
+                    f"No images extracted from response. Response structure: {list(data.keys())}"
+                )
                 if "candidates" in data:
                     logger.error(f"Candidates: {data['candidates']}")
                 raise APIError("No image data found in Gemini API response")
@@ -129,7 +118,7 @@ class GeminiClient:
             self._handle_http_error(e)
         except Exception as e:
             logger.error(f"Gemini API request failed: {e}")
-            raise APIError(f"Gemini API request failed: {e}")
+            raise APIError(f"Gemini API request failed: {e}") from e
 
     async def generate_text(
         self,
@@ -152,14 +141,10 @@ class GeminiClient:
         model_id = GEMINI_MODELS.get(model, model)
         url = f"{self.base_url}/models/{model_id}:generateContent"
 
-        request_body = {
-            "contents": [{"parts": [{"text": prompt}]}]
-        }
+        request_body = {"contents": [{"parts": [{"text": prompt}]}]}
 
         if system_instruction:
-            request_body["system_instruction"] = {
-                "parts": [{"text": system_instruction}]
-            }
+            request_body["system_instruction"] = {"parts": [{"text": system_instruction}]}
 
         headers = {
             "x-goog-api-key": self.api_key,
@@ -179,7 +164,7 @@ class GeminiClient:
             self._handle_http_error(e)
         except Exception as e:
             logger.error(f"Gemini text generation failed: {e}")
-            raise APIError(f"Gemini text generation failed: {e}")
+            raise APIError(f"Gemini text generation failed: {e}") from e
 
     def _extract_images(self, response_data: dict[str, Any]) -> list[str]:
         """Extract base64 image data from Gemini API response."""
@@ -230,23 +215,23 @@ class GeminiClient:
 
         if status_code == 401 or status_code == 403:
             raise AuthenticationError(
-                "Authentication failed. Please check your Gemini API key.",
-                status_code=status_code
+                "Authentication failed. Please check your Gemini API key.", status_code=status_code
             )
         elif status_code == 429:
             raise RateLimitError(
-                "Rate limit exceeded. Please try again later.",
-                status_code=status_code
+                "Rate limit exceeded. Please try again later.", status_code=status_code
             )
-        elif status_code == 400 and ("SAFETY" in error_text.upper() or "BLOCKED" in error_text.upper()):
+        elif status_code == 400 and (
+            "SAFETY" in error_text.upper() or "BLOCKED" in error_text.upper()
+        ):
             raise ContentPolicyError(
                 "Content was blocked by safety filters. Please modify your prompt.",
-                status_code=status_code
+                status_code=status_code,
             )
         else:
             raise APIError(
                 f"API request failed with status {status_code}: {error_text}",
-                status_code=status_code
+                status_code=status_code,
             )
 
     async def close(self) -> None:

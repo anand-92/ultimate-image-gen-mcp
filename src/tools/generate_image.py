@@ -8,15 +8,12 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from fastmcp import Image
-
-from ..config import ALL_MODELS, ASPECT_RATIOS, get_settings
+from ..config import get_settings
 from ..core import (
     validate_aspect_ratio,
     validate_image_format,
     validate_model,
     validate_number_of_images,
-    validate_person_generation,
     validate_prompt,
     validate_seed,
 )
@@ -38,7 +35,6 @@ async def generate_image_tool(
     blend_images: bool = False,
     use_world_knowledge: bool = False,
     # Imagen-specific options
-    person_generation: str = "allow_adult",
     negative_prompt: str | None = None,
     seed: int | None = None,
     # Output options
@@ -59,7 +55,6 @@ async def generate_image_tool(
         maintain_character_consistency: Maintain character features across generations (Gemini)
         blend_images: Enable multi-image blending (Gemini)
         use_world_knowledge: Use real-world knowledge for context (Gemini)
-        person_generation: Person generation policy (Imagen: dont_allow, allow_adult, allow_all)
         negative_prompt: What to avoid in the image (Imagen)
         seed: Random seed for reproducibility (Imagen)
         save_to_disk: Save images to output directory
@@ -74,18 +69,6 @@ async def generate_image_tool(
     validate_number_of_images(number_of_images)
     validate_aspect_ratio(aspect_ratio)
     validate_image_format(output_format)
-
-    if person_generation:
-        validate_person_generation(person_generation)
-
-        # Warn if prompt may conflict with person_generation policy
-        if person_generation == "dont_allow":
-            person_keywords = ["person", "people", "man", "woman", "child", "human", "face", "portrait", "crowd"]
-            if any(keyword in prompt.lower() for keyword in person_keywords):
-                logger.warning(
-                    f"Prompt contains person-related keywords but person_generation is set to 'dont_allow'. "
-                    f"This may result in the API blocking image generation."
-                )
 
     if seed is not None:
         validate_seed(seed)
@@ -134,7 +117,7 @@ async def generate_image_tool(
         if model.startswith("imagen"):
             params["number_of_images"] = number_of_images
             params["output_format"] = f"image/{output_format}"
-            params["person_generation"] = person_generation
+            params["person_generation"] = "allow_adult"  # Hard-coded to allow adults
             if negative_prompt:
                 params["negative_prompt"] = negative_prompt
             if seed is not None:
@@ -145,7 +128,7 @@ async def generate_image_tool(
             prompt=prompt,
             model=model,
             enhance_prompt=enhance_prompt and settings.api.enable_prompt_enhancement,
-            **params
+            **params,
         )
 
         # Prepare response
@@ -158,7 +141,7 @@ async def generate_image_tool(
             "metadata": {
                 "enhance_prompt": enhance_prompt,
                 "aspect_ratio": aspect_ratio,
-            }
+            },
         }
 
         # Save images and prepare for MCP response
@@ -202,7 +185,6 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         maintain_character_consistency: bool = False,
         blend_images: bool = False,
         use_world_knowledge: bool = False,
-        person_generation: str = "allow_adult",
         negative_prompt: str | None = None,
         seed: int | None = None,
     ) -> str:
@@ -224,7 +206,6 @@ def register_generate_image_tool(mcp_server: Any) -> None:
             maintain_character_consistency: Maintain character features (Gemini only)
             blend_images: Enable multi-image blending (Gemini only)
             use_world_knowledge: Use real-world knowledge (Gemini only)
-            person_generation: Person policy: dont_allow, allow_adult, allow_all (Imagen only)
             negative_prompt: What to avoid in the image (Imagen only)
             seed: Random seed for reproducibility (NOT SUPPORTED - will be ignored)
 
@@ -249,7 +230,6 @@ def register_generate_image_tool(mcp_server: Any) -> None:
                 maintain_character_consistency=maintain_character_consistency,
                 blend_images=blend_images,
                 use_world_knowledge=use_world_knowledge,
-                person_generation=person_generation,
                 negative_prompt=negative_prompt,
                 seed=seed,
             )
@@ -258,8 +238,6 @@ def register_generate_image_tool(mcp_server: Any) -> None:
 
         except Exception as e:
             logger.error(f"Error generating image: {e}")
-            return json.dumps({
-                "success": False,
-                "error": str(e),
-                "error_type": type(e).__name__
-            }, indent=2)
+            return json.dumps(
+                {"success": False, "error": str(e), "error_type": type(e).__name__}, indent=2
+            )

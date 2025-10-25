@@ -54,12 +54,12 @@ async def batch_generate_images(
         "batch_size": batch_size,
         "completed": 0,
         "failed": 0,
-        "results": []
+        "results": [],
     }
 
     # Process prompts in batches
     for i in range(0, len(prompts), batch_size):
-        batch = prompts[i:i + batch_size]
+        batch = prompts[i : i + batch_size]
         logger.info(f"Processing batch {i // batch_size + 1}: {len(batch)} prompts")
 
         # Create tasks for parallel processing
@@ -71,7 +71,7 @@ async def batch_generate_images(
                 aspect_ratio=aspect_ratio,
                 output_format=output_format,
                 number_of_images=1,
-                **shared_params
+                **shared_params,
             )
             for prompt in batch
         ]
@@ -86,19 +86,19 @@ async def batch_generate_images(
             if isinstance(result, Exception):
                 logger.error(f"Failed to generate image for prompt {prompt_index}: {result}")
                 results["failed"] += 1
-                results["results"].append({
-                    "prompt_index": prompt_index,
-                    "prompt": batch[j],
-                    "success": False,
-                    "error": str(result)
-                })
+                results["results"].append(
+                    {
+                        "prompt_index": prompt_index,
+                        "prompt": batch[j],
+                        "success": False,
+                        "error": str(result),
+                    }
+                )
             else:
                 results["completed"] += 1
-                results["results"].append({
-                    "prompt_index": prompt_index,
-                    "prompt": batch[j],
-                    **result
-                })
+                results["results"].append(
+                    {"prompt_index": prompt_index, "prompt": batch[j], **result}
+                )
 
     return results
 
@@ -114,7 +114,6 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
         aspect_ratio: str = "1:1",
         output_format: str = "png",
         batch_size: int | None = None,
-        person_generation: str = "allow_adult",
         negative_prompt: str | None = None,
     ) -> str:
         """
@@ -130,7 +129,6 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
             aspect_ratio: Aspect ratio for all images (default: 1:1)
             output_format: Image format for all images (default: png)
             batch_size: Parallel batch size (default: from config)
-            person_generation: Person policy for Imagen models (default: allow_adult)
             negative_prompt: Negative prompt for Imagen models (optional)
 
         Returns:
@@ -144,7 +142,6 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
                 aspect_ratio=aspect_ratio,
                 output_format=output_format,
                 batch_size=batch_size,
-                person_generation=person_generation,
                 negative_prompt=negative_prompt,
             )
 
@@ -152,8 +149,6 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
 
         except Exception as e:
             logger.error(f"Batch generation error: {e}")
-            return json.dumps({
-                "success": False,
-                "error": str(e),
-                "error_type": type(e).__name__
-            }, indent=2)
+            return json.dumps(
+                {"success": False, "error": str(e), "error_type": type(e).__name__}, indent=2
+            )

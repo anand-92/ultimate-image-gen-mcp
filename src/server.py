@@ -10,7 +10,6 @@ Unified MCP server supporting:
 
 import logging
 import sys
-from pathlib import Path
 
 from fastmcp import FastMCP
 
@@ -69,9 +68,9 @@ def create_app() -> FastMCP:
                             "Image editing",
                             "Character consistency",
                             "Multi-image blending",
-                            "World knowledge integration"
+                            "World knowledge integration",
                         ],
-                        "default": True
+                        "default": True,
                     }
                 },
                 "imagen": {
@@ -84,8 +83,8 @@ def create_app() -> FastMCP:
                             "Negative prompts",
                             "Seed-based reproducibility",
                             "Person generation controls",
-                            "Advanced controls"
-                        ]
+                            "Advanced controls",
+                        ],
                     },
                     "imagen-4-fast": {
                         "name": "Imagen 4 Fast",
@@ -96,8 +95,8 @@ def create_app() -> FastMCP:
                             "Negative prompts",
                             "Seed-based reproducibility",
                             "Person generation controls",
-                            "Cost-effective"
-                        ]
+                            "Cost-effective",
+                        ],
                     },
                     "imagen-4-ultra": {
                         "name": "Imagen 4 Ultra",
@@ -107,10 +106,10 @@ def create_app() -> FastMCP:
                             "Best prompt adherence",
                             "Professional results",
                             "Enhanced text rendering",
-                            "Advanced controls"
-                        ]
-                    }
-                }
+                            "Advanced controls",
+                        ],
+                    },
+                },
             }
 
             return json.dumps(models_info, indent=2)

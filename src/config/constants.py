@@ -31,13 +31,13 @@ DEFAULT_ENHANCEMENT_MODEL = "gemini-flash-latest"
 
 # Aspect ratios
 ASPECT_RATIOS = [
-    "1:1",   # Square
-    "2:3",   # Portrait
-    "3:2",   # Landscape
-    "3:4",   # Portrait
-    "4:3",   # Standard landscape
-    "4:5",   # Portrait
-    "5:4",   # Landscape
+    "1:1",  # Square
+    "2:3",  # Portrait
+    "3:2",  # Landscape
+    "3:4",  # Portrait
+    "4:3",  # Standard landscape
+    "4:5",  # Portrait
+    "5:4",  # Landscape
     "9:16",  # Vertical mobile
     "16:9",  # Widescreen
     "21:9",  # Ultrawide

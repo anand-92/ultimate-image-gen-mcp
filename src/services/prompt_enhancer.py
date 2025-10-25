@@ -64,7 +64,7 @@ class PromptEnhancer:
             enhanced = await self.gemini_client.generate_text(
                 prompt=instruction,
                 system_instruction=PROMPT_ENHANCEMENT_SYSTEM_INSTRUCTION,
-                model="gemini-flash-latest"
+                model="gemini-flash-latest",
             )
 
             # Clean up the enhanced prompt
@@ -84,11 +84,7 @@ class PromptEnhancer:
                 "enhanced_prompt": original_prompt,
             }
 
-    def _build_enhancement_instruction(
-        self,
-        prompt: str,
-        context: dict[str, Any] | None
-    ) -> str:
+    def _build_enhancement_instruction(self, prompt: str, context: dict[str, Any] | None) -> str:
         """Build the instruction for prompt enhancement."""
         instruction_parts = [f"Enhance this image generation prompt:\n\n{prompt}"]
 
