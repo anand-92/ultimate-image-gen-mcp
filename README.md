@@ -25,6 +25,76 @@
 - Detailed logging and debugging
 - MCP resources for configuration and model information
 
+## 🎬 Showcase - See It In Action
+
+> **Simple prompt → Mind-blowing results** - Watch AI prompt enhancement transform basic ideas into cinematic masterpieces.
+
+### Example: Animal + Spider-Man Raimi Suit Blends
+
+All images generated with **16:9 aspect ratio** and **AI prompt enhancement enabled**.
+
+#### Original Prompt
+```
+a black shiba inu blended with spiderman raimi suit version
+```
+
+**Generated with Imagen 4**
+- **Model**: `imagen-4`
+- **Enhanced Prompt**: "A wide cinematic landscape composition capturing a hyper-detailed, photorealistic portrait of a Black Shiba Inu merged with the aesthetic of the Raimi Spider-Man suit. The dog's dense, black fur integrates seamlessly with the suit's signature sculpted, rubberized texture, featuring raised silver webbing across its body and limbs..."
+- **Size**: 1.47 MB
+- **Result**: Cinematic composition with dramatic chiaroscuro lighting
+
+**Generated with Imagen 4 Ultra**
+- **Model**: `imagen-4-ultra`
+- **Enhanced Prompt**: "A hyper-detailed, photorealistic depiction of a black Shiba Inu fully integrated with the aesthetic and materials of the Tobey Maguire Raimi Spider-Man suit... dramatic, high-contrast Chiaroscuro lighting... heroic, mid-action leap across a rain-slicked urban rooftop..."
+- **Size**: 1.59 MB
+- **Result**: Ultra-high quality with enhanced material textures and volumetric fog
+
+**Generated with Gemini 2.5 Flash (Nanobanana)**
+- **Model**: `gemini-2.5-flash-image`
+- **Enhanced Prompt**: "Cinematic wide landscape... formidable Black Shiba Inu hybrid... seamlessly merged with the iconic deep crimson and midnight black textures of the Raimi Spider-Man suit... dynamic, heroic three-quarter pose, mid-leap..."
+- **Size**: 1.63 MB
+- **Result**: Dynamic hero pose with intense atmospheric effects
+
+---
+
+#### Original Prompt
+```
+an american wirehair cat blended with spiderman raimi suit version
+```
+
+**Generated with Gemini 2.5 Flash (Nanobanana)**
+- **Model**: `gemini-2.5-flash-image`
+- **Enhanced Prompt**: "An imposing figure: an American Wirehair Cat hybrid, its naturally coarse, mottled fur seamlessly integrated with the iconic Sam Raimi Spider-Man suit... perched atop a rain-slicked, Gothic skyscraper gargoyle... high-contrast chiaroscuro, with powerful blue and red rim lighting..."
+- **Size**: 1.62 MB
+- **Result**: Gothic noir aesthetic with dramatic gargoyle perch
+
+---
+
+#### Original Prompt
+```
+a maine coon cat blended with spiderman raimi suit version
+```
+
+**Generated with Gemini 2.5 Flash (Nanobanana)**
+- **Model**: `gemini-2.5-flash-image`
+- **Enhanced Prompt**: "A hyper-detailed, photorealistic cinematic composition of a gigantic Maine Coon cat fused with the specific aesthetics of the Sam Raimi Spider-Man suit... dense fur coat mimics the suit's precise material textures... dramatic low-angle (worm's-eye view) to emphasize monumental scale..."
+- **Size**: 1.61 MB
+- **Result**: Emphasizes gigantic scale perfect for Maine Coon's natural size
+
+---
+
+### 🔥 Why These Results Are Incredible
+
+1. **Simple Input → Professional Output**: Just a basic description produces cinematic, professionally-lit compositions
+2. **Model Variety**: Compare Imagen 4, Imagen 4 Ultra, and Gemini 2.5 Flash results side-by-side
+3. **AI Enhancement Magic**: See how prompt enhancement adds lighting, composition, and technical details
+4. **Consistent Quality**: All images feature dramatic chiaroscuro lighting, atmospheric effects, and hyper-detailed textures
+5. **Model-Specific Strengths**:
+   - Imagen 4 Ultra: Maximum quality and material detail
+   - Gemini 2.5 Flash: Dynamic poses and creative interpretations
+   - Imagen 4: Balanced speed and quality
+
 ## 🚀 Quick Start
 
 ### Prerequisites
