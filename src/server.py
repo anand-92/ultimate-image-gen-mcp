@@ -133,37 +133,46 @@ def create_app() -> FastMCP:
 
             return json.dumps(config, indent=2)
 
-        @mcp.tool()
-        async def get_image(filename: str) -> str:
+        @mcp.resource("images://list")
+        def list_images() -> str:
+            """List all generated images in the output directory."""
+            import json
+            from pathlib import Path
+
+            image_files = []
+            if settings.output_dir.exists():
+                for img in sorted(settings.output_dir.glob("*.png"), key=lambda p: p.stat().st_mtime, reverse=True):
+                    image_files.append({
+                        "filename": img.name,
+                        "size": img.stat().st_size,
+                        "modified": img.stat().st_mtime,
+                        "uri": f"image://{img.name}"
+                    })
+
+            return json.dumps({"images": image_files}, indent=2)
+
+        @mcp.resource("image://{filename}")
+        def get_image(filename: str) -> bytes:
             """
-            Retrieve a generated image by filename and return as base64.
+            Get a generated image by filename.
 
             Args:
-                filename: The filename of the image (e.g., "gemini-2.5-flash-image_20251026_055415_a cute orange cat sleeping on a sunny windowsill.png")
+                filename: The filename of the image
 
             Returns:
-                JSON string with base64-encoded image data
+                Image bytes (PNG format)
             """
-            import base64
-            import json
             from pathlib import Path
 
             image_path = settings.output_dir / filename
 
             if not image_path.exists():
-                return json.dumps({"success": False, "error": f"Image not found: {filename}"})
+                raise FileNotFoundError(f"Image not found: {filename}")
 
             if not image_path.is_relative_to(settings.output_dir):
-                return json.dumps({"success": False, "error": "Access denied: path outside output directory"})
+                raise ValueError("Access denied: path outside output directory")
 
-            image_data = base64.b64encode(image_path.read_bytes()).decode()
-
-            return json.dumps({
-                "success": True,
-                "filename": filename,
-                "image_base64": image_data,
-                "size": len(image_path.read_bytes())
-            }, indent=2)
+            return image_path.read_bytes()
 
         logger.info("Ultimate Gemini MCP Server initialized successfully")
         return mcp
