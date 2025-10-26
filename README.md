@@ -39,18 +39,27 @@ a black shiba inu blended with spiderman raimi suit version
 ```
 
 **Generated with Imagen 4**
+
+![Shiba Inu Spider-Man - Imagen 4](showcase/examples/shiba-spiderman-imagen4.png)
+
 - **Model**: `imagen-4`
 - **Enhanced Prompt**: "A wide cinematic landscape composition capturing a hyper-detailed, photorealistic portrait of a Black Shiba Inu merged with the aesthetic of the Raimi Spider-Man suit. The dog's dense, black fur integrates seamlessly with the suit's signature sculpted, rubberized texture, featuring raised silver webbing across its body and limbs..."
 - **Size**: 1.47 MB
 - **Result**: Cinematic composition with dramatic chiaroscuro lighting
 
 **Generated with Imagen 4 Ultra**
+
+![Shiba Inu Spider-Man - Imagen 4 Ultra](showcase/examples/shiba-spiderman-imagen4-ultra.png)
+
 - **Model**: `imagen-4-ultra`
 - **Enhanced Prompt**: "A hyper-detailed, photorealistic depiction of a black Shiba Inu fully integrated with the aesthetic and materials of the Tobey Maguire Raimi Spider-Man suit... dramatic, high-contrast Chiaroscuro lighting... heroic, mid-action leap across a rain-slicked urban rooftop..."
 - **Size**: 1.59 MB
 - **Result**: Ultra-high quality with enhanced material textures and volumetric fog
 
 **Generated with Gemini 2.5 Flash (Nanobanana)**
+
+![Shiba Inu Spider-Man - Gemini Flash](showcase/examples/shiba-spiderman-gemini-flash.png)
+
 - **Model**: `gemini-2.5-flash-image`
 - **Enhanced Prompt**: "Cinematic wide landscape... formidable Black Shiba Inu hybrid... seamlessly merged with the iconic deep crimson and midnight black textures of the Raimi Spider-Man suit... dynamic, heroic three-quarter pose, mid-leap..."
 - **Size**: 1.63 MB
@@ -64,6 +73,9 @@ an american wirehair cat blended with spiderman raimi suit version
 ```
 
 **Generated with Gemini 2.5 Flash (Nanobanana)**
+
+![American Wirehair Spider-Man - Gemini Flash](showcase/examples/wirehair-spiderman-gemini-flash.png)
+
 - **Model**: `gemini-2.5-flash-image`
 - **Enhanced Prompt**: "An imposing figure: an American Wirehair Cat hybrid, its naturally coarse, mottled fur seamlessly integrated with the iconic Sam Raimi Spider-Man suit... perched atop a rain-slicked, Gothic skyscraper gargoyle... high-contrast chiaroscuro, with powerful blue and red rim lighting..."
 - **Size**: 1.62 MB
@@ -77,6 +89,9 @@ a maine coon cat blended with spiderman raimi suit version
 ```
 
 **Generated with Gemini 2.5 Flash (Nanobanana)**
+
+![Maine Coon Spider-Man - Gemini Flash](showcase/examples/mainecoon-spiderman-gemini-flash.png)
+
 - **Model**: `gemini-2.5-flash-image`
 - **Enhanced Prompt**: "A hyper-detailed, photorealistic cinematic composition of a gigantic Maine Coon cat fused with the specific aesthetics of the Sam Raimi Spider-Man suit... dense fur coat mimics the suit's precise material textures... dramatic low-angle (worm's-eye view) to emphasize monumental scale..."
 - **Size**: 1.61 MB
