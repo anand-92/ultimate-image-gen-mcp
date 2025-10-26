@@ -179,6 +179,47 @@ async def generate_image_tool(
         await image_service.close()
 
 
+def register_get_image_tool(mcp_server: Any) -> None:
+    """Register get_image tool with MCP server."""
+
+    @mcp_server.tool()
+    async def get_image(filename: str) -> str:
+        """
+        Retrieve a generated image by filename and return as base64.
+
+        Args:
+            filename: The filename of the image (e.g., "gemini-2.5-flash-image_20251026_055415_a cute orange cat sleeping on a sunny windowsill.png")
+
+        Returns:
+            JSON string with base64-encoded image data
+        """
+        import base64
+        import json
+
+        from ..config import get_settings
+
+        settings = get_settings()
+        image_path = settings.output_dir / filename
+
+        if not image_path.exists():
+            return json.dumps({"success": False, "error": f"Image not found: {filename}"})
+
+        try:
+            image_data = base64.b64encode(image_path.read_bytes()).decode()
+
+            return json.dumps(
+                {
+                    "success": True,
+                    "filename": filename,
+                    "image_base64": image_data,
+                    "size": image_path.stat().st_size,
+                },
+                indent=2,
+            )
+        except Exception as e:
+            return json.dumps({"success": False, "error": str(e)})
+
+
 def register_generate_image_tool(mcp_server: Any) -> None:
     """Register generate_image tool with MCP server."""
 

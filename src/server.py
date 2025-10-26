@@ -14,7 +14,11 @@ import sys
 from fastmcp import FastMCP
 
 from .config import ALL_MODELS, get_settings
-from .tools import register_batch_generate_tool, register_generate_image_tool
+from .tools import (
+    register_batch_generate_tool,
+    register_generate_image_tool,
+    register_get_image_tool,
+)
 
 # Set up logging
 logging.basicConfig(
@@ -51,6 +55,7 @@ def create_app() -> FastMCP:
         # Register tools
         register_generate_image_tool(mcp)
         register_batch_generate_tool(mcp)
+        register_get_image_tool(mcp)
 
         # Add resources
         @mcp.resource("models://list")
@@ -132,47 +137,6 @@ def create_app() -> FastMCP:
             }
 
             return json.dumps(config, indent=2)
-
-        @mcp.resource("images://list")
-        def list_images() -> str:
-            """List all generated images in the output directory."""
-            import json
-            from pathlib import Path
-
-            image_files = []
-            if settings.output_dir.exists():
-                for img in sorted(settings.output_dir.glob("*.png"), key=lambda p: p.stat().st_mtime, reverse=True):
-                    image_files.append({
-                        "filename": img.name,
-                        "size": img.stat().st_size,
-                        "modified": img.stat().st_mtime,
-                        "uri": f"image://{img.name}"
-                    })
-
-            return json.dumps({"images": image_files}, indent=2)
-
-        @mcp.resource("image://{filename}")
-        def get_image(filename: str) -> bytes:
-            """
-            Get a generated image by filename.
-
-            Args:
-                filename: The filename of the image
-
-            Returns:
-                Image bytes (PNG format)
-            """
-            from pathlib import Path
-
-            image_path = settings.output_dir / filename
-
-            if not image_path.exists():
-                raise FileNotFoundError(f"Image not found: {filename}")
-
-            if not image_path.is_relative_to(settings.output_dir):
-                raise ValueError("Access denied: path outside output directory")
-
-            return image_path.read_bytes()
 
         logger.info("Ultimate Gemini MCP Server initialized successfully")
         return mcp

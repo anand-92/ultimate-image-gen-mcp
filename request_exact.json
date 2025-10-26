@@ -1,0 +1,14 @@
+{
+    "instances": [
+        {
+            "prompt": "two adults walking in a park"
+        }
+    ],
+    "parameters": {
+        "outputMimeType": "image/jpeg",
+        "sampleCount": 1,
+        "personGeneration": "ALLOW_ALL",
+        "aspectRatio": "1:1",
+        "imageSize": "2K",
+    }
+}
