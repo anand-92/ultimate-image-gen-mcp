@@ -133,28 +133,37 @@ def create_app() -> FastMCP:
 
             return json.dumps(config, indent=2)
 
-        @mcp.resource("image://{path}")
-        def get_image(path: str) -> bytes:
+        @mcp.tool()
+        async def get_image(filename: str) -> str:
             """
-            Get a generated image by filename.
+            Retrieve a generated image by filename and return as base64.
 
             Args:
-                path: The filename of the image (e.g., "gemini-2.5-flash-image_20251026_054949_a serene mountain landscape at sunset with snow-ca.png")
+                filename: The filename of the image (e.g., "gemini-2.5-flash-image_20251026_055415_a cute orange cat sleeping on a sunny windowsill.png")
 
             Returns:
-                Image data as bytes
+                JSON string with base64-encoded image data
             """
+            import base64
+            import json
             from pathlib import Path
 
-            image_path = settings.output_dir / path
+            image_path = settings.output_dir / filename
 
             if not image_path.exists():
-                raise FileNotFoundError(f"Image not found: {path}")
+                return json.dumps({"success": False, "error": f"Image not found: {filename}"})
 
             if not image_path.is_relative_to(settings.output_dir):
-                raise ValueError("Access denied: path outside output directory")
+                return json.dumps({"success": False, "error": "Access denied: path outside output directory"})
 
-            return image_path.read_bytes()
+            image_data = base64.b64encode(image_path.read_bytes()).decode()
+
+            return json.dumps({
+                "success": True,
+                "filename": filename,
+                "image_base64": image_data,
+                "size": len(image_path.read_bytes())
+            }, indent=2)
 
         logger.info("Ultimate Gemini MCP Server initialized successfully")
         return mcp
