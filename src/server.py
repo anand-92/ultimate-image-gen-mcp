@@ -58,6 +58,29 @@ def create_app() -> FastMCP:
         register_get_image_tool(mcp)
 
         # Add resources
+        @mcp.resource("image://latest", mime_type="image/png")
+        def get_latest_image() -> bytes:
+            """
+            Get the most recently generated image.
+
+            Returns:
+                Binary PNG image data
+            """
+            if not settings.output_dir.exists():
+                raise FileNotFoundError("No images have been generated yet")
+
+            # Find most recent PNG file
+            images = sorted(
+                settings.output_dir.glob("*.png"),
+                key=lambda p: p.stat().st_mtime,
+                reverse=True
+            )
+
+            if not images:
+                raise FileNotFoundError("No images found in output directory")
+
+            return images[0].read_bytes()
+
         @mcp.resource("models://list")
         def list_models() -> str:
             """List all available image generation models."""
