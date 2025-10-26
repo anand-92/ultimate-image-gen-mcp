@@ -45,7 +45,7 @@ def create_app() -> FastMCP:
         # Create FastMCP server
         mcp = FastMCP(
             "Ultimate Gemini MCP",
-            version="1.0.0",
+            version="1.5.0",
         )
 
         # Register tools
