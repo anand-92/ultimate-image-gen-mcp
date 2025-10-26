@@ -165,12 +165,24 @@ Add to your `claude_desktop_config.json`:
       "command": "uvx",
       "args": ["ultimate-gemini-mcp"],
       "env": {
-        "GEMINI_API_KEY": "your-api-key-here"
+        "GEMINI_API_KEY": "your-api-key-here",
+        "OUTPUT_DIR": "/path/to/your/images"
       }
     }
   }
 }
 ```
+
+**Important Notes:**
+
+1. **OUTPUT_DIR is required** when using `uvx` to avoid read-only file system errors. Set it to an absolute path where you want generated images saved:
+   - **macOS**: `"/Users/yourusername/gemini_images"`
+   - **Windows**: `"C:\\Users\\YourUsername\\gemini_images"`
+
+2. **uvx path issues on macOS**: If you get `spawn uvx ENOENT` errors, use the full path to uvx:
+   ```json
+   "command": "/Users/yourusername/.local/bin/uvx"
+   ```
 
 **Config file locations:**
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
@@ -179,9 +191,14 @@ Add to your `claude_desktop_config.json`:
 ### With Claude Code (VS Code)
 
 ```bash
-# Add MCP server to Claude Code
-claude mcp add ultimate-gemini --env GEMINI_API_KEY=your-api-key -- uvx ultimate-gemini-mcp
+# Add MCP server to Claude Code (with required OUTPUT_DIR)
+claude mcp add ultimate-gemini \
+  --env GEMINI_API_KEY=your-api-key \
+  --env OUTPUT_DIR=/path/to/your/images \
+  -- uvx ultimate-gemini-mcp
 ```
+
+**Note**: Replace `/path/to/your/images` with an absolute path to where you want images saved.
 
 ### With Cursor
 
@@ -194,12 +211,15 @@ Add to Cursor's MCP configuration (`.cursor/mcp.json`):
       "command": "uvx",
       "args": ["ultimate-gemini-mcp"],
       "env": {
-        "GEMINI_API_KEY": "your-api-key-here"
+        "GEMINI_API_KEY": "your-api-key-here",
+        "OUTPUT_DIR": "/path/to/your/images"
       }
     }
   }
 }
 ```
+
+**Note**: Set `OUTPUT_DIR` to an absolute path where you want generated images saved.
 
 ## 🎯 Available Models
 
@@ -376,6 +396,24 @@ View current server configuration.
 
 ## 🐛 Troubleshooting
 
+### "spawn uvx ENOENT" error
+- **Cause**: Claude Desktop cannot find the `uvx` command in its PATH
+- **Solution**: Use the full path to uvx in your config:
+  ```json
+  "command": "/Users/yourusername/.local/bin/uvx"
+  ```
+- Find your uvx location with: `which uvx`
+
+### "[Errno 30] Read-only file system: 'generated_images'"
+- **Cause**: When using `uvx`, the default directory is in a read-only cache location
+- **Solution**: Add `OUTPUT_DIR` to your MCP config:
+  ```json
+  "env": {
+    "GEMINI_API_KEY": "your-key",
+    "OUTPUT_DIR": "/Users/yourusername/gemini_images"
+  }
+  ```
+
 ### "GEMINI_API_KEY not found"
 - Add your API key to `.env` or environment variables
 - Get a free key at [Google AI Studio](https://makersuite.google.com/app/apikey)
@@ -391,6 +429,7 @@ View current server configuration.
 ### Images not saving
 - Check that OUTPUT_DIR exists and is writable
 - Verify you have sufficient disk space
+- Create the directory manually: `mkdir -p /path/to/your/images`
 
 ## 🤝 Contributing
 
