@@ -217,6 +217,27 @@ def register_generate_image_tool(mcp_server: Any) -> None:
 
         Returns:
             JSON string with generation results and file paths
+
+        IMPORTANT - AI Assistant Instructions:
+        After generating an image, you MUST:
+        1. Parse the JSON response to extract the file path from result["images"][0]["path"]
+        2. Inform the user of the EXACT file path where the image was saved
+        3. Use the Read tool to load and display the image to the user
+        4. Optionally: Use bash to open the image in the default viewer:
+           - macOS: `open /path/to/image.png`
+           - Linux: `xdg-open /path/to/image.png`
+           - Windows: `start /path/to/image.png`
+
+        Example workflow:
+        ```
+        1. Call generate_image tool
+        2. Parse response JSON to get file_path
+        3. Tell user: "Image saved to: /Users/name/gemini_images/image.png"
+        4. Call Read tool with the file_path to display the image
+        5. Optionally call Bash with `open /path/to/image.png` to open in Preview
+        ```
+
+        DO NOT just say "image generated successfully" without showing the path and image!
         """
         try:
             result = await generate_image_tool(

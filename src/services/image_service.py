@@ -54,12 +54,14 @@ class ImageResult:
             raise ImageProcessingError(f"Failed to save image: {e}") from e
 
     def _generate_filename(self) -> str:
-        """Generate descriptive filename."""
+        """Generate clean, short filename."""
         timestamp = self.timestamp.strftime("%Y%m%d_%H%M%S")
-        # Sanitize prompt for filename
-        prompt_snippet = sanitize_filename(self.prompt[:50])
+        # Shorten model name (e.g., gemini-2.5-flash-image -> gemini-flash)
+        model_short = self.model.replace("gemini-2.5-flash-image", "gemini-flash").replace("imagen-4-", "img4-")
+        # Sanitize and shorten prompt (max 30 chars)
+        prompt_snippet = sanitize_filename(self.prompt[:30])
         index_str = f"_{self.index + 1}" if self.index > 0 else ""
-        return f"{self.model}_{timestamp}_{prompt_snippet}{index_str}.png"
+        return f"{model_short}_{timestamp}_{prompt_snippet}{index_str}.png"
 
     def get_size(self) -> int:
         """Get image size in bytes."""

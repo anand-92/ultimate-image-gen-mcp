@@ -133,6 +133,21 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
 
         Returns:
             JSON string with batch results including individual image paths
+
+        IMPORTANT - AI Assistant Instructions:
+        After batch generation completes, you MUST:
+        1. Parse the JSON response to extract file paths from result["results"][i]["images"][0]["path"]
+        2. Show the user a summary of all generated images with their file paths
+        3. Optionally display one or more images using the Read tool
+        4. Let the user know the total count of successful vs failed generations
+
+        Example response to user:
+        "Successfully generated 3 images:
+        1. /path/to/image1.png - [description]
+        2. /path/to/image2.png - [description]
+        3. /path/to/image3.png - [description]"
+
+        DO NOT just say "batch generation completed" without listing the file paths!
         """
         try:
             result = await batch_generate_images(
