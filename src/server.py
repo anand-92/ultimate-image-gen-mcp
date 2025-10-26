@@ -133,6 +133,29 @@ def create_app() -> FastMCP:
 
             return json.dumps(config, indent=2)
 
+        @mcp.resource("image://{path}")
+        def get_image(path: str) -> bytes:
+            """
+            Get a generated image by filename.
+
+            Args:
+                path: The filename of the image (e.g., "gemini-2.5-flash-image_20251026_054949_a serene mountain landscape at sunset with snow-ca.png")
+
+            Returns:
+                Image data as bytes
+            """
+            from pathlib import Path
+
+            image_path = settings.output_dir / path
+
+            if not image_path.exists():
+                raise FileNotFoundError(f"Image not found: {path}")
+
+            if not image_path.is_relative_to(settings.output_dir):
+                raise ValueError("Access denied: path outside output directory")
+
+            return image_path.read_bytes()
+
         logger.info("Ultimate Gemini MCP Server initialized successfully")
         return mcp
 
