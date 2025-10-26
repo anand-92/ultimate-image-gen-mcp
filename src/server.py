@@ -14,11 +14,7 @@ import sys
 from fastmcp import FastMCP
 
 from .config import ALL_MODELS, get_settings
-from .tools import (
-    register_batch_generate_tool,
-    register_generate_image_tool,
-    register_get_image_tool,
-)
+from .tools import register_batch_generate_tool, register_generate_image_tool
 
 # Set up logging
 logging.basicConfig(
@@ -55,7 +51,6 @@ def create_app() -> FastMCP:
         # Register tools
         register_generate_image_tool(mcp)
         register_batch_generate_tool(mcp)
-        register_get_image_tool(mcp)
 
         # Add resources
         @mcp.resource("image://latest", mime_type="image/png")
@@ -71,9 +66,7 @@ def create_app() -> FastMCP:
 
             # Find most recent PNG file
             images = sorted(
-                settings.output_dir.glob("*.png"),
-                key=lambda p: p.stat().st_mtime,
-                reverse=True
+                settings.output_dir.glob("*.png"), key=lambda p: p.stat().st_mtime, reverse=True
             )
 
             if not images:
