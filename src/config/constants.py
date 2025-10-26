@@ -74,4 +74,4 @@ ENHANCEMENT_TIMEOUT = 30
 BATCH_TIMEOUT = 120
 
 # Output settings
-DEFAULT_OUTPUT_DIR = "generated_images"
+DEFAULT_OUTPUT_DIR = "/tmp/generated_images"
