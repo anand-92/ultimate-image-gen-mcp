@@ -150,13 +150,20 @@ async def generate_image_tool(
                 "index": result.index,
                 "size": result.get_size(),
                 "timestamp": result.timestamp.isoformat(),
+                # Always include base64 data for cloud/HTTP deployments
+                "image_base64": result.image_data,
             }
 
             if save_to_disk:
-                # Save to output directory
-                file_path = result.save(settings.output_dir)
-                image_info["path"] = str(file_path)
-                image_info["filename"] = file_path.name
+                # Try to save to output directory, but don't fail if it errors
+                try:
+                    file_path = result.save(settings.output_dir)
+                    image_info["path"] = str(file_path)
+                    image_info["filename"] = file_path.name
+                    logger.info(f"Saved image to {file_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to save image to disk: {e}")
+                    image_info["save_error"] = str(e)
 
             # Add enhanced prompt info
             if "enhanced_prompt" in result.metadata:
@@ -187,6 +194,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         use_world_knowledge: bool = False,
         negative_prompt: str | None = None,
         seed: int | None = None,
+        save_to_disk: bool = True,
     ) -> str:
         """
         Generate images using Google's Gemini or Imagen models.
@@ -208,6 +216,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
             use_world_knowledge: Use real-world knowledge (Gemini only)
             negative_prompt: What to avoid in the image (Imagen only)
             seed: Random seed for reproducibility (NOT SUPPORTED - will be ignored)
+            save_to_disk: Save images to output directory (default: True, cloud-safe)
 
         Available models:
         - gemini-2.5-flash-image (default)
@@ -216,7 +225,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         - imagen-4-ultra
 
         Returns:
-            JSON string with generation results and file paths
+            JSON string with generation results, base64 image data, and file paths (if saved)
         """
         try:
             result = await generate_image_tool(
@@ -232,6 +241,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
                 use_world_knowledge=use_world_knowledge,
                 negative_prompt=negative_prompt,
                 seed=seed,
+                save_to_disk=save_to_disk,
             )
 
             return json.dumps(result, indent=2)
