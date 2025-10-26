@@ -38,7 +38,7 @@ async def generate_image_tool(
     negative_prompt: str | None = None,
     seed: int | None = None,
     # Output options
-    save_to_disk: bool = False,
+    save_to_disk: bool = True,
     **kwargs: Any,
 ) -> dict[str, Any]:
     """
@@ -150,8 +150,6 @@ async def generate_image_tool(
                 "index": result.index,
                 "size": result.get_size(),
                 "timestamp": result.timestamp.isoformat(),
-                # Always include base64 data for cloud/HTTP deployments
-                "image_base64": result.image_data,
             }
 
             if save_to_disk:
@@ -164,6 +162,10 @@ async def generate_image_tool(
                 except Exception as e:
                     logger.warning(f"Failed to save image to disk: {e}")
                     image_info["save_error"] = str(e)
+            else:
+                # Only include base64 data when not saving to disk (cloud/serverless scenarios)
+                # This prevents token overflow for MCP clients with file system access
+                image_info["image_base64"] = result.image_data
 
             # Add enhanced prompt info
             if "enhanced_prompt" in result.metadata:
@@ -194,7 +196,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         use_world_knowledge: bool = False,
         negative_prompt: str | None = None,
         seed: int | None = None,
-        save_to_disk: bool = False,
+        save_to_disk: bool = True,
     ) -> str:
         """
         Generate images using Google's Gemini or Imagen models.
@@ -216,7 +218,9 @@ def register_generate_image_tool(mcp_server: Any) -> None:
             use_world_knowledge: Use real-world knowledge (Gemini only)
             negative_prompt: What to avoid in the image (Imagen only)
             seed: Random seed for reproducibility (NOT SUPPORTED - will be ignored)
-            save_to_disk: Save images to output directory (default: False, optimized for cloud)
+            save_to_disk: Save images to disk and return file paths (default: True).
+                         When True: Returns file paths only (efficient for MCP clients).
+                         When False: Returns base64 image data (for cloud/serverless).
 
         Available models:
         - gemini-2.5-flash-image (default)
@@ -225,7 +229,8 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         - imagen-4-ultra
 
         Returns:
-            JSON string with generation results, base64 image data, and file paths (if saved)
+            JSON string with generation results and either file paths (save_to_disk=True)
+            or base64 image data (save_to_disk=False)
         """
         try:
             result = await generate_image_tool(
