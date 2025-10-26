@@ -115,7 +115,7 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
         output_format: str = "png",
         batch_size: int | None = None,
         negative_prompt: str | None = None,
-        save_to_disk: bool = True,
+        save_to_disk: bool = False,
     ) -> str:
         """
         Generate multiple images from a list of prompts efficiently.
@@ -131,7 +131,7 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
             output_format: Image format for all images (default: png)
             batch_size: Parallel batch size (default: from config)
             negative_prompt: Negative prompt for Imagen models (optional)
-            save_to_disk: Save images to output directory (default: True, cloud-safe)
+            save_to_disk: Save images to output directory (default: False, optimized for cloud)
 
         Returns:
             JSON string with batch results including base64 image data and file paths (if saved)

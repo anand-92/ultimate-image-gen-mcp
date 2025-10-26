@@ -38,7 +38,7 @@ async def generate_image_tool(
     negative_prompt: str | None = None,
     seed: int | None = None,
     # Output options
-    save_to_disk: bool = True,
+    save_to_disk: bool = False,
     **kwargs: Any,
 ) -> dict[str, Any]:
     """
@@ -194,7 +194,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         use_world_knowledge: bool = False,
         negative_prompt: str | None = None,
         seed: int | None = None,
-        save_to_disk: bool = True,
+        save_to_disk: bool = False,
     ) -> str:
         """
         Generate images using Google's Gemini or Imagen models.
@@ -216,7 +216,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
             use_world_knowledge: Use real-world knowledge (Gemini only)
             negative_prompt: What to avoid in the image (Imagen only)
             seed: Random seed for reproducibility (NOT SUPPORTED - will be ignored)
-            save_to_disk: Save images to output directory (default: True, cloud-safe)
+            save_to_disk: Save images to output directory (default: False, optimized for cloud)
 
         Available models:
         - gemini-2.5-flash-image (default)
