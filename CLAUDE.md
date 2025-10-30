@@ -104,7 +104,9 @@ await image_service.generate(
 
 **`server.py`** - FastMCP initialization
 - Creates app via `create_app()` factory function
-- Registers tools and resources
+- Registers tools (generate_image, batch_generate)
+- Registers prompts (6 ready-to-use templates for common use cases)
+- Registers resources (models://list, settings://config)
 - Entry point for both `python -m src.server` and `uvx`
 
 ### Data Flow for Image Generation

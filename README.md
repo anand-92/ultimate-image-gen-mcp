@@ -25,7 +25,7 @@
 - Comprehensive error handling and validation
 - Configurable settings via environment variables
 - Detailed logging and debugging
-- MCP resources for configuration and model information
+- MCP prompts, tools, and resources for complete MCP integration
 
 ## 🎬 Showcase - See It In Action
 
@@ -347,6 +347,28 @@ Running with the same seed will produce the same image.
 | `REQUEST_TIMEOUT` | API request timeout (seconds) | `60` |
 | `MAX_BATCH_SIZE` | Maximum parallel batch size | `8` |
 | `LOG_LEVEL` | Logging level | `INFO` |
+
+## 💬 Prompts
+
+The server provides several ready-to-use prompt templates to help you get started:
+
+### `quick_image_generation`
+Quick start: Generate a single image with Gemini.
+
+### `high_quality_image`
+Generate a high-quality image using Imagen 4 Ultra.
+
+### `image_with_negative_prompt`
+Generate an image using negative prompts (Imagen only).
+
+### `batch_image_generation`
+Generate multiple images from a list of prompts.
+
+### `edit_existing_image`
+Edit an existing image using Gemini (requires input image).
+
+### `character_consistency`
+Generate images with character consistency (Gemini only).
 
 ## 📚 MCP Resources
 

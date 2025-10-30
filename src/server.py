@@ -52,6 +52,67 @@ def create_app() -> FastMCP:
         register_generate_image_tool(mcp)
         register_batch_generate_tool(mcp)
 
+        # Add prompts
+        @mcp.prompt()
+        def quick_image_generation() -> list[dict[str, str]]:
+            """Quick start: Generate a single image with Gemini."""
+            return [
+                {
+                    "role": "user",
+                    "content": "Generate an image of a serene mountain landscape at sunset using the default Gemini model.",
+                }
+            ]
+
+        @mcp.prompt()
+        def high_quality_image() -> list[dict[str, str]]:
+            """Generate a high-quality image using Imagen 4 Ultra."""
+            return [
+                {
+                    "role": "user",
+                    "content": "Generate a professional quality image of a futuristic cityscape with neon lights using the imagen-4-ultra model.",
+                }
+            ]
+
+        @mcp.prompt()
+        def image_with_negative_prompt() -> list[dict[str, str]]:
+            """Generate an image using negative prompts (Imagen only)."""
+            return [
+                {
+                    "role": "user",
+                    "content": "Generate an image of a beautiful garden with flowers, but avoid including any people or animals. Use the imagen-4 model with negative_prompt parameter.",
+                }
+            ]
+
+        @mcp.prompt()
+        def batch_image_generation() -> list[dict[str, str]]:
+            """Generate multiple images from a list of prompts."""
+            return [
+                {
+                    "role": "user",
+                    "content": 'Generate a batch of images with these prompts: ["a cat on a windowsill", "a dog in a park", "a bird in a tree"] using the batch_generate tool.',
+                }
+            ]
+
+        @mcp.prompt()
+        def edit_existing_image() -> list[dict[str, str]]:
+            """Edit an existing image using Gemini (requires input image)."""
+            return [
+                {
+                    "role": "user",
+                    "content": "Edit an existing image to change the time of day to sunset. Use the generate_image tool with input_image_path parameter and Gemini model.",
+                }
+            ]
+
+        @mcp.prompt()
+        def character_consistency() -> list[dict[str, str]]:
+            """Generate images with character consistency (Gemini only)."""
+            return [
+                {
+                    "role": "user",
+                    "content": "Generate an image of a cartoon character, then generate another image of the same character in a different scene using maintain_character_consistency=True.",
+                }
+            ]
+
         # Add resources
         @mcp.resource("models://list")
         def list_models() -> str:
