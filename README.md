@@ -2,6 +2,8 @@
 
 > The most comprehensive MCP server for AI image generation, unifying Google's Gemini 2.5 Flash Image and Imagen 4/Ultra models with advanced features.
 
+[![MCP Badge](https://lobehub.com/badge/mcp-full/anand-92-ultimate-image-gen-mcp)](https://lobehub.com/mcp/anand-92-ultimate-image-gen-mcp)
+
 ## ✨ Features
 
 ### Unified API Support
