@@ -114,7 +114,12 @@ def create_app() -> FastMCP:
             ]
 
         # Add resources
-        @mcp.resource("models://list")
+        @mcp.resource(
+            "models://list",
+            name="Available Models",
+            description="List all available image generation models with their features and capabilities",
+            mime_type="application/json",
+        )
         def list_models() -> str:
             """List all available image generation models."""
             import json
@@ -175,7 +180,12 @@ def create_app() -> FastMCP:
 
             return json.dumps(models_info, indent=2)
 
-        @mcp.resource("settings://config")
+        @mcp.resource(
+            "settings://config",
+            name="Server Configuration",
+            description="View current server settings and configuration values",
+            mime_type="application/json",
+        )
         def get_config() -> str:
             """Get current server configuration."""
             import json

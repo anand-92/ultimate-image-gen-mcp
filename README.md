@@ -372,11 +372,27 @@ Generate images with character consistency (Gemini only).
 
 ## 📚 MCP Resources
 
-### `models://list`
-View all available models with descriptions and features.
+Resources provide read-only access to server information and can be attached as context in your MCP client.
 
-### `settings://config`
-View current server configuration.
+### `models://list` - Available Models
+**URI**: `models://list`
+**Type**: application/json
+**Description**: Lists all available image generation models (Gemini and Imagen) with their features, capabilities, and descriptions.
+
+**Use this when you need to**:
+- Check which models are available
+- Understand model capabilities
+- See model-specific features
+
+### `settings://config` - Server Configuration
+**URI**: `settings://config`
+**Type**: application/json
+**Description**: Shows current server configuration including output directory, timeout settings, batch size limits, and default parameters.
+
+**Use this when you need to**:
+- Check where images are being saved
+- Verify prompt enhancement is enabled
+- See current timeout and batch settings
 
 ## 🎭 Use Cases
 
