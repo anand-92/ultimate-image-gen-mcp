@@ -126,9 +126,9 @@ def validate_prompts_list(prompts: list[str]) -> None:
 def sanitize_filename(filename: str) -> str:
     """Sanitize filename to remove unsafe and special characters."""
     # Replace all non-alphanumeric characters (except hyphens) with underscores
-    safe_name = re.sub(r'[^a-zA-Z0-9-]', '_', filename)
+    safe_name = re.sub(r"[^a-zA-Z0-9-]", "_", filename)
     # Remove multiple consecutive underscores
-    safe_name = re.sub(r'_+', '_', safe_name)
+    safe_name = re.sub(r"_+", "_", safe_name)
     # Remove leading/trailing underscores
     safe_name = safe_name.strip("_")
     # Ensure filename is not empty

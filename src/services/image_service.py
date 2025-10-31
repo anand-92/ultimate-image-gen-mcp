@@ -57,7 +57,9 @@ class ImageResult:
         """Generate clean, short filename."""
         timestamp = self.timestamp.strftime("%Y%m%d_%H%M%S")
         # Shorten model name (e.g., gemini-2.5-flash-image -> gemini-flash)
-        model_short = self.model.replace("gemini-2.5-flash-image", "gemini-flash").replace("imagen-4-", "img4-")
+        model_short = self.model.replace("gemini-2.5-flash-image", "gemini-flash").replace(
+            "imagen-4-", "img4-"
+        )
         # Sanitize and shorten prompt (max 30 chars)
         prompt_snippet = sanitize_filename(self.prompt[:30])
         index_str = f"_{self.index + 1}" if self.index > 0 else ""

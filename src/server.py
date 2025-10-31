@@ -142,62 +142,74 @@ def create_app() -> FastMCP:
         @mcp.prompt()
         def quick_image_generation() -> list[dict[str, str]]:
             """Quick start: Generate a single image with Gemini."""
-            return _validate_prompt_messages([
-                {
-                    "role": "user",
-                    "content": "Generate an image of a serene mountain landscape at sunset using the default Gemini model.",
-                }
-            ])
+            return _validate_prompt_messages(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate an image of a serene mountain landscape at sunset using the default Gemini model.",
+                    }
+                ]
+            )
 
         @mcp.prompt()
         def high_quality_image() -> list[dict[str, str]]:
             """Generate a high-quality image using Imagen 4 Ultra."""
-            return _validate_prompt_messages([
-                {
-                    "role": "user",
-                    "content": "Generate a professional quality image of a futuristic cityscape with neon lights using the imagen-4-ultra model.",
-                }
-            ])
+            return _validate_prompt_messages(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate a professional quality image of a futuristic cityscape with neon lights using the imagen-4-ultra model.",
+                    }
+                ]
+            )
 
         @mcp.prompt()
         def image_with_negative_prompt() -> list[dict[str, str]]:
             """Generate an image using negative prompts (Imagen only)."""
-            return _validate_prompt_messages([
-                {
-                    "role": "user",
-                    "content": "Generate an image of a beautiful garden with flowers using imagen-4. Make sure there are no people or animals in the image.",
-                }
-            ])
+            return _validate_prompt_messages(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate an image of a beautiful garden with flowers using imagen-4. Make sure there are no people or animals in the image.",
+                    }
+                ]
+            )
 
         @mcp.prompt()
         def batch_image_generation() -> list[dict[str, str]]:
             """Generate multiple images from a list of prompts."""
-            return _validate_prompt_messages([
-                {
-                    "role": "user",
-                    "content": 'Generate images for these three scenes: a cat on a windowsill, a dog in a park, and a bird in a tree.',
-                }
-            ])
+            return _validate_prompt_messages(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate images for these three scenes: a cat on a windowsill, a dog in a park, and a bird in a tree.",
+                    }
+                ]
+            )
 
         @mcp.prompt()
         def edit_existing_image() -> list[dict[str, str]]:
             """Edit an existing image using Gemini (requires input image)."""
-            return _validate_prompt_messages([
-                {
-                    "role": "user",
-                    "content": "I have an image at /path/to/image.jpg. Can you edit it to change the time of day to sunset?",
-                }
-            ])
+            return _validate_prompt_messages(
+                [
+                    {
+                        "role": "user",
+                        "content": "I have an image at /path/to/image.jpg. Can you edit it to change the time of day to sunset?",
+                    }
+                ]
+            )
 
         @mcp.prompt()
         def character_consistency() -> list[dict[str, str]]:
             """Generate images with character consistency (Gemini only)."""
-            return _validate_prompt_messages([
-                {
-                    "role": "user",
-                    "content": "Generate an image of a cartoon wizard character. Then create another image showing the same wizard character in a different scene - perhaps in a magical forest instead of a library.",
-                }
-            ])
+            return _validate_prompt_messages(
+                [
+                    {
+                        "role": "user",
+                        "content": "Generate an image of a cartoon wizard character. Then create another image showing the same wizard character in a different scene - perhaps in a magical forest instead of a library.",
+                    }
+                ]
+            )
 
         # Add resources
         @mcp.resource(
