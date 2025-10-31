@@ -75,3 +75,58 @@ BATCH_TIMEOUT = 120
 
 # Output settings
 DEFAULT_OUTPUT_DIR = "generated_images"
+
+# Model metadata for MCP resources
+MODEL_METADATA = {
+    "gemini": {
+        "gemini-2.5-flash-image": {
+            "name": "Gemini 2.5 Flash Image",
+            "description": "Advanced image generation with editing and prompt enhancement",
+            "features": [
+                "Prompt enhancement",
+                "Image editing",
+                "Character consistency",
+                "Multi-image blending",
+                "World knowledge integration",
+            ],
+            "default": True,
+        }
+    },
+    "imagen": {
+        "imagen-4": {
+            "name": "Imagen 4",
+            "description": "High-quality image generation with improved text rendering",
+            "features": [
+                "Enhanced quality",
+                "Better text rendering",
+                "Negative prompts",
+                "Seed-based reproducibility",
+                "Person generation controls",
+                "Advanced controls",
+            ],
+        },
+        "imagen-4-fast": {
+            "name": "Imagen 4 Fast",
+            "description": "Optimized for faster generation while maintaining good quality",
+            "features": [
+                "Faster generation speed",
+                "Good quality output",
+                "Negative prompts",
+                "Seed-based reproducibility",
+                "Person generation controls",
+                "Cost-effective",
+            ],
+        },
+        "imagen-4-ultra": {
+            "name": "Imagen 4 Ultra",
+            "description": "Highest quality with best prompt adherence",
+            "features": [
+                "Highest quality",
+                "Best prompt adherence",
+                "Professional results",
+                "Enhanced text rendering",
+                "Advanced controls",
+            ],
+        },
+    },
+}

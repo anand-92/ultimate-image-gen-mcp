@@ -12,10 +12,11 @@ import json
 import logging
 import sys
 from functools import lru_cache
+from typing import TypedDict
 
 from fastmcp import FastMCP
 
-from .config import ALL_MODELS, get_settings
+from .config import ALL_MODELS, MODEL_METADATA, get_settings
 from .tools import register_batch_generate_tool, register_generate_image_tool
 
 # Set up logging
@@ -28,18 +29,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def _validate_prompt_messages(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+class PromptMessage(TypedDict):
+    """Type definition for MCP prompt messages."""
+
+    role: str
+    content: str
+
+
+def _validate_prompt_messages(messages: list[PromptMessage]) -> list[PromptMessage]:
     """
     Validate prompt message structure for MCP compliance.
 
     Args:
-        messages: List of message dictionaries
+        messages: List of message dictionaries with 'role' and 'content' keys
 
     Returns:
-        Validated messages
+        Validated messages (same as input if valid)
 
     Raises:
-        ValueError: If message structure is invalid
+        ValueError: If message structure is invalid or types are incorrect
     """
     for msg in messages:
         if "role" not in msg or "content" not in msg:
@@ -55,61 +63,9 @@ def _get_models_json() -> str:
     Get models information as JSON (cached).
 
     This function is cached because the models list is static.
+    Uses MODEL_METADATA from constants.py as the single source of truth.
     """
-    models_info = {
-        "gemini": {
-            "gemini-2.5-flash-image": {
-                "name": "Gemini 2.5 Flash Image",
-                "description": "Advanced image generation with editing and prompt enhancement",
-                "features": [
-                    "Prompt enhancement",
-                    "Image editing",
-                    "Character consistency",
-                    "Multi-image blending",
-                    "World knowledge integration",
-                ],
-                "default": True,
-            }
-        },
-        "imagen": {
-            "imagen-4": {
-                "name": "Imagen 4",
-                "description": "High-quality image generation with improved text rendering",
-                "features": [
-                    "Enhanced quality",
-                    "Better text rendering",
-                    "Negative prompts",
-                    "Seed-based reproducibility",
-                    "Person generation controls",
-                    "Advanced controls",
-                ],
-            },
-            "imagen-4-fast": {
-                "name": "Imagen 4 Fast",
-                "description": "Optimized for faster generation while maintaining good quality",
-                "features": [
-                    "Faster generation speed",
-                    "Good quality output",
-                    "Negative prompts",
-                    "Seed-based reproducibility",
-                    "Person generation controls",
-                    "Cost-effective",
-                ],
-            },
-            "imagen-4-ultra": {
-                "name": "Imagen 4 Ultra",
-                "description": "Highest quality with best prompt adherence",
-                "features": [
-                    "Highest quality",
-                    "Best prompt adherence",
-                    "Professional results",
-                    "Enhanced text rendering",
-                    "Advanced controls",
-                ],
-            },
-        },
-    }
-    return json.dumps(models_info, indent=2)
+    return json.dumps(MODEL_METADATA, indent=2)
 
 
 def create_app() -> FastMCP:
@@ -140,7 +96,7 @@ def create_app() -> FastMCP:
 
         # Add prompts
         @mcp.prompt()
-        def quick_image_generation() -> list[dict[str, str]]:
+        def quick_image_generation() -> list[PromptMessage]:
             """Quick start: Generate a single image with Gemini."""
             return _validate_prompt_messages(
                 [
@@ -152,7 +108,7 @@ def create_app() -> FastMCP:
             )
 
         @mcp.prompt()
-        def high_quality_image() -> list[dict[str, str]]:
+        def high_quality_image() -> list[PromptMessage]:
             """Generate a high-quality image using Imagen 4 Ultra."""
             return _validate_prompt_messages(
                 [
@@ -164,7 +120,7 @@ def create_app() -> FastMCP:
             )
 
         @mcp.prompt()
-        def image_with_negative_prompt() -> list[dict[str, str]]:
+        def image_with_negative_prompt() -> list[PromptMessage]:
             """Generate an image using negative prompts (Imagen only)."""
             return _validate_prompt_messages(
                 [
@@ -176,7 +132,7 @@ def create_app() -> FastMCP:
             )
 
         @mcp.prompt()
-        def batch_image_generation() -> list[dict[str, str]]:
+        def batch_image_generation() -> list[PromptMessage]:
             """Generate multiple images from a list of prompts."""
             return _validate_prompt_messages(
                 [
@@ -188,25 +144,25 @@ def create_app() -> FastMCP:
             )
 
         @mcp.prompt()
-        def edit_existing_image() -> list[dict[str, str]]:
+        def edit_existing_image() -> list[PromptMessage]:
             """Edit an existing image using Gemini (requires input image)."""
             return _validate_prompt_messages(
                 [
                     {
                         "role": "user",
-                        "content": "I have an image at /path/to/image.jpg. Can you edit it to change the time of day to sunset?",
+                        "content": "I have an image at ~/Pictures/photo.jpg. Can you edit it to change the time of day to sunset?",
                     }
                 ]
             )
 
         @mcp.prompt()
-        def character_consistency() -> list[dict[str, str]]:
-            """Generate images with character consistency (Gemini only)."""
+        def character_consistency() -> list[PromptMessage]:
+            """Generate images with character consistency across multiple scenes (Gemini only, multi-step)."""
             return _validate_prompt_messages(
                 [
                     {
                         "role": "user",
-                        "content": "Generate an image of a cartoon wizard character. Then create another image showing the same wizard character in a different scene - perhaps in a magical forest instead of a library.",
+                        "content": "First, generate an image of a cartoon wizard character studying in a library with maintain_character_consistency enabled. Then, generate a second image of the same wizard character exploring a magical forest, also with maintain_character_consistency enabled to keep the character's appearance consistent between scenes.",
                     }
                 ]
             )

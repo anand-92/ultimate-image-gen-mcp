@@ -350,25 +350,49 @@ Running with the same seed will produce the same image.
 
 ## 💬 Prompts
 
-The server provides several ready-to-use prompt templates to help you get started:
+The server provides several ready-to-use prompt templates to help you get started. These can be selected in your MCP client (Claude Desktop, Cursor, etc.) for instant use.
 
 ### `quick_image_generation`
-Quick start: Generate a single image with Gemini.
+**Description**: Quick start - Generate a single image with Gemini.
+
+**What it does**: Creates a serene mountain landscape at sunset using the default Gemini model with prompt enhancement enabled.
+
+**Usage in Claude Desktop**: Select this prompt to get started immediately with a basic image generation.
 
 ### `high_quality_image`
-Generate a high-quality image using Imagen 4 Ultra.
+**Description**: Generate a high-quality image using Imagen 4 Ultra.
+
+**What it does**: Creates a professional quality futuristic cityscape with neon lights using Imagen's highest quality model.
+
+**Usage example**: Perfect when you need the absolute best quality for professional work or final presentations.
 
 ### `image_with_negative_prompt`
-Generate an image using negative prompts (Imagen only).
+**Description**: Generate an image using negative prompts (Imagen only).
+
+**What it does**: Creates a beautiful garden with flowers while explicitly avoiding people or animals using Imagen's negative prompt feature.
+
+**Usage example**: Use this when you want precise control over what NOT to include in your images.
 
 ### `batch_image_generation`
-Generate multiple images from a list of prompts.
+**Description**: Generate multiple images from a list of prompts.
+
+**What it does**: Creates three different images (cat on windowsill, dog in park, bird in tree) in a single request.
+
+**Usage example**: Ideal for generating multiple related images at once, like social media content or design variations.
 
 ### `edit_existing_image`
-Edit an existing image using Gemini (requires input image).
+**Description**: Edit an existing image using Gemini (requires input image).
+
+**What it does**: Takes an existing image and modifies it to change the time of day to sunset.
+
+**Usage example**: Select this prompt and update the path to your own image file (e.g., ~/Pictures/photo.jpg) to edit it.
 
 ### `character_consistency`
-Generate images with character consistency (Gemini only).
+**Description**: Generate images with character consistency across multiple scenes (Gemini only, multi-step).
+
+**What it does**: First generates a wizard character in a library, then generates the same wizard in a different scene (magical forest) while maintaining consistent character appearance.
+
+**Usage example**: Perfect for creating consistent character designs across multiple images for storytelling, character sheets, or animation concepts.
 
 ## 📚 MCP Resources
 
