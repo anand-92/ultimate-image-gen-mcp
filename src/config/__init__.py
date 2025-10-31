@@ -10,6 +10,7 @@ from .constants import (
     IMAGEN_MODELS,
     MAX_BATCH_SIZE,
     MAX_IMAGES_PER_REQUEST,
+    MODEL_METADATA,
     PERSON_GENERATION_OPTIONS,
 )
 from .settings import APIConfig, ServerConfig, Settings, get_settings
@@ -24,6 +25,7 @@ __all__ = [
     "IMAGEN_MODELS",
     "MAX_BATCH_SIZE",
     "MAX_IMAGES_PER_REQUEST",
+    "MODEL_METADATA",
     "PERSON_GENERATION_OPTIONS",
     "APIConfig",
     "ServerConfig",
