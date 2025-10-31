@@ -181,7 +181,7 @@ def create_app() -> FastMCP:
         @mcp.resource(
             "settings://config",
             name="Server Configuration",
-            description="View current server settings and configuration values",
+            description="Shows current server configuration including output directory, timeout settings, batch size limits, and default parameters",
             mime_type="application/json",
         )
         def get_config() -> str:
