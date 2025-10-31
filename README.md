@@ -107,10 +107,14 @@ a maine coon cat blended with spiderman raimi suit version
 2. **Model Variety**: Compare Imagen 4, Imagen 4 Ultra, and Gemini 2.5 Flash results side-by-side
 3. **AI Enhancement Magic**: See how prompt enhancement adds lighting, composition, and technical details
 4. **Consistent Quality**: All images feature dramatic chiaroscuro lighting, atmospheric effects, and hyper-detailed textures
+
 5. **Model-Specific Strengths**:
-   - Imagen 4 Ultra: Maximum quality and material detail
-   - Gemini 2.5 Flash: Dynamic poses and creative interpretations
-   - Imagen 4: Balanced speed and quality
+   - **Imagen 4 Ultra**: Maximum quality and material detail - best for final production work
+   - **Imagen 4**: Balanced quality with good performance - the standard choice
+   - **Imagen 4 Fast**: Optimized speed while maintaining quality - perfect for rapid iteration and prototyping
+   - **Gemini 2.5 Flash**: Dynamic poses and creative interpretations with editing capabilities
+
+**Note**: The showcase above demonstrates `imagen-4`, `imagen-4-ultra`, and `gemini-2.5-flash-image`. All Imagen models (including `imagen-4-fast`) produce similar quality outputs, with the main difference being generation speed.
 
 ## 🚀 Quick Start
 
