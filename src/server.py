@@ -8,8 +8,10 @@ Unified MCP server supporting:
 - Batch processing, prompt templates, and comprehensive features
 """
 
+import json
 import logging
 import sys
+from functools import lru_cache
 
 from fastmcp import FastMCP
 
@@ -24,6 +26,90 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_prompt_messages(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """
+    Validate prompt message structure for MCP compliance.
+
+    Args:
+        messages: List of message dictionaries
+
+    Returns:
+        Validated messages
+
+    Raises:
+        ValueError: If message structure is invalid
+    """
+    for msg in messages:
+        if "role" not in msg or "content" not in msg:
+            raise ValueError(f"Invalid prompt message structure: {msg}")
+        if not isinstance(msg["role"], str) or not isinstance(msg["content"], str):
+            raise ValueError(f"Prompt message role and content must be strings: {msg}")
+    return messages
+
+
+@lru_cache(maxsize=1)
+def _get_models_json() -> str:
+    """
+    Get models information as JSON (cached).
+
+    This function is cached because the models list is static.
+    """
+    models_info = {
+        "gemini": {
+            "gemini-2.5-flash-image": {
+                "name": "Gemini 2.5 Flash Image",
+                "description": "Advanced image generation with editing and prompt enhancement",
+                "features": [
+                    "Prompt enhancement",
+                    "Image editing",
+                    "Character consistency",
+                    "Multi-image blending",
+                    "World knowledge integration",
+                ],
+                "default": True,
+            }
+        },
+        "imagen": {
+            "imagen-4": {
+                "name": "Imagen 4",
+                "description": "High-quality image generation with improved text rendering",
+                "features": [
+                    "Enhanced quality",
+                    "Better text rendering",
+                    "Negative prompts",
+                    "Seed-based reproducibility",
+                    "Person generation controls",
+                    "Advanced controls",
+                ],
+            },
+            "imagen-4-fast": {
+                "name": "Imagen 4 Fast",
+                "description": "Optimized for faster generation while maintaining good quality",
+                "features": [
+                    "Faster generation speed",
+                    "Good quality output",
+                    "Negative prompts",
+                    "Seed-based reproducibility",
+                    "Person generation controls",
+                    "Cost-effective",
+                ],
+            },
+            "imagen-4-ultra": {
+                "name": "Imagen 4 Ultra",
+                "description": "Highest quality with best prompt adherence",
+                "features": [
+                    "Highest quality",
+                    "Best prompt adherence",
+                    "Professional results",
+                    "Enhanced text rendering",
+                    "Advanced controls",
+                ],
+            },
+        },
+    }
+    return json.dumps(models_info, indent=2)
 
 
 def create_app() -> FastMCP:
@@ -56,62 +142,62 @@ def create_app() -> FastMCP:
         @mcp.prompt()
         def quick_image_generation() -> list[dict[str, str]]:
             """Quick start: Generate a single image with Gemini."""
-            return [
+            return _validate_prompt_messages([
                 {
                     "role": "user",
                     "content": "Generate an image of a serene mountain landscape at sunset using the default Gemini model.",
                 }
-            ]
+            ])
 
         @mcp.prompt()
         def high_quality_image() -> list[dict[str, str]]:
             """Generate a high-quality image using Imagen 4 Ultra."""
-            return [
+            return _validate_prompt_messages([
                 {
                     "role": "user",
                     "content": "Generate a professional quality image of a futuristic cityscape with neon lights using the imagen-4-ultra model.",
                 }
-            ]
+            ])
 
         @mcp.prompt()
         def image_with_negative_prompt() -> list[dict[str, str]]:
             """Generate an image using negative prompts (Imagen only)."""
-            return [
+            return _validate_prompt_messages([
                 {
                     "role": "user",
-                    "content": "Generate an image of a beautiful garden with flowers, but avoid including any people or animals. Use the imagen-4 model with negative_prompt parameter.",
+                    "content": "Generate an image of a beautiful garden with flowers using imagen-4. Make sure there are no people or animals in the image.",
                 }
-            ]
+            ])
 
         @mcp.prompt()
         def batch_image_generation() -> list[dict[str, str]]:
             """Generate multiple images from a list of prompts."""
-            return [
+            return _validate_prompt_messages([
                 {
                     "role": "user",
-                    "content": 'Generate a batch of images with these prompts: ["a cat on a windowsill", "a dog in a park", "a bird in a tree"] using the batch_generate tool.',
+                    "content": 'Generate images for these three scenes: a cat on a windowsill, a dog in a park, and a bird in a tree.',
                 }
-            ]
+            ])
 
         @mcp.prompt()
         def edit_existing_image() -> list[dict[str, str]]:
             """Edit an existing image using Gemini (requires input image)."""
-            return [
+            return _validate_prompt_messages([
                 {
                     "role": "user",
-                    "content": "Edit an existing image to change the time of day to sunset. Use the generate_image tool with input_image_path parameter and Gemini model.",
+                    "content": "I have an image at /path/to/image.jpg. Can you edit it to change the time of day to sunset?",
                 }
-            ]
+            ])
 
         @mcp.prompt()
         def character_consistency() -> list[dict[str, str]]:
             """Generate images with character consistency (Gemini only)."""
-            return [
+            return _validate_prompt_messages([
                 {
                     "role": "user",
-                    "content": "Generate an image of a cartoon character, then generate another image of the same character in a different scene using maintain_character_consistency=True.",
+                    "content": "Generate an image of a cartoon wizard character. Then create another image showing the same wizard character in a different scene - perhaps in a magical forest instead of a library.",
                 }
-            ]
+            ])
 
         # Add resources
         @mcp.resource(
@@ -122,63 +208,7 @@ def create_app() -> FastMCP:
         )
         def list_models() -> str:
             """List all available image generation models."""
-            import json
-
-            models_info = {
-                "gemini": {
-                    "gemini-2.5-flash-image": {
-                        "name": "Gemini 2.5 Flash Image",
-                        "description": "Advanced image generation with editing and prompt enhancement",
-                        "features": [
-                            "Prompt enhancement",
-                            "Image editing",
-                            "Character consistency",
-                            "Multi-image blending",
-                            "World knowledge integration",
-                        ],
-                        "default": True,
-                    }
-                },
-                "imagen": {
-                    "imagen-4": {
-                        "name": "Imagen 4",
-                        "description": "High-quality image generation with improved text rendering",
-                        "features": [
-                            "Enhanced quality",
-                            "Better text rendering",
-                            "Negative prompts",
-                            "Seed-based reproducibility",
-                            "Person generation controls",
-                            "Advanced controls",
-                        ],
-                    },
-                    "imagen-4-fast": {
-                        "name": "Imagen 4 Fast",
-                        "description": "Optimized for faster generation while maintaining good quality",
-                        "features": [
-                            "Faster generation speed",
-                            "Good quality output",
-                            "Negative prompts",
-                            "Seed-based reproducibility",
-                            "Person generation controls",
-                            "Cost-effective",
-                        ],
-                    },
-                    "imagen-4-ultra": {
-                        "name": "Imagen 4 Ultra",
-                        "description": "Highest quality with best prompt adherence",
-                        "features": [
-                            "Highest quality",
-                            "Best prompt adherence",
-                            "Professional results",
-                            "Enhanced text rendering",
-                            "Advanced controls",
-                        ],
-                    },
-                },
-            }
-
-            return json.dumps(models_info, indent=2)
+            return _get_models_json()
 
         @mcp.resource(
             "settings://config",
@@ -188,8 +218,7 @@ def create_app() -> FastMCP:
         )
         def get_config() -> str:
             """Get current server configuration."""
-            import json
-
+            # Note: Settings are not cached because they could change based on environment
             config = {
                 "output_directory": str(settings.output_dir),
                 "prompt_enhancement_enabled": settings.api.enable_prompt_enhancement,
