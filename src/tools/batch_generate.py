@@ -95,11 +95,23 @@ async def batch_generate_images(
                     }
                 )
             else:
-                results["completed"] += 1
-                result_dict = result if isinstance(result, dict) else {}  # type: ignore[arg-type]
-                results["results"].append(
-                    {"prompt_index": prompt_index, "prompt": batch[j], **result_dict}
-                )
+                # result is dict[str, Any] here (not an Exception)
+                if not isinstance(result, dict):
+                    logger.error(f"Unexpected result type: {type(result)}")
+                    results["failed"] += 1
+                    results["results"].append(
+                        {
+                            "prompt_index": prompt_index,
+                            "prompt": batch[j],
+                            "success": False,
+                            "error": "Unexpected result type",
+                        }
+                    )
+                else:
+                    results["completed"] += 1
+                    results["results"].append(
+                        {"prompt_index": prompt_index, "prompt": batch[j], **result}
+                    )
 
     return results
 

@@ -176,11 +176,12 @@ class GeminiClient:
         model_id = GEMINI_MODELS.get(model, model)
 
         try:
-            config_args: dict[str, Any] = {}
-            if system_instruction:
-                config_args["system_instruction"] = system_instruction
-
-            config = types.GenerateContentConfig(**config_args) if config_args else None  # type: ignore[arg-type]
+            # Build config with proper types instead of using **kwargs
+            config = (
+                types.GenerateContentConfig(system_instruction=system_instruction)
+                if system_instruction
+                else None
+            )
 
             # Run in executor since genai SDK is synchronous
             loop = asyncio.get_event_loop()
