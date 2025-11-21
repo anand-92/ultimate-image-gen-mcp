@@ -76,6 +76,42 @@ Generate infographics, menus, or diagrams with legible text:
 4. **Character Consistency**: Use up to 14 reference images for maintaining style
 5. **Professional Features**: Advanced text rendering for infographics and marketing
 
+## 🎨 Prompt Enhancement Showcase
+
+See the power of AI prompt enhancement! Simple prompts are automatically transformed into detailed, cinematic descriptions:
+
+**Original:** "A fierce wolf wearing the black symbiote Spider-Man suit, web-slinging through city at night"
+
+**Enhanced:** "A powerfully built Alaskan Tundra Wolf, snarling fiercely, wearing the matte black, viscous, wet-looking symbiote suit with exaggerated white spider emblem. Captured mid-air in dramatic web-slinging arc with taut glowing webbing. Extreme low-angle perspective, hyper-detailed neo-noir cityscape at midnight with rain-slicked asphalt. High-contrast cinematic lighting with deep shadows and electric neon rim lighting."
+
+### Generated Images (2K, 16:9, Prompt Enhancement: ON)
+
+**Wolf - Black Symbiote Suit**
+
+![Wolf in Black Symbiote Suit](showcase/examples/wolf_symbiote.png)
+
+**Lion - Classic Red & Blue Suit**
+
+![Lion in Classic Spider-Man Suit](showcase/examples/lion_classic.png)
+
+**Black Panther - Symbiote Suit**
+
+![Panther in Symbiote Suit](showcase/examples/panther_symbiote.png)
+
+**Eagle - Classic Suit in Flight**
+
+![Eagle in Spider-Man Suit](showcase/examples/eagle_classic.png)
+
+**Grizzly Bear - Symbiote Suit**
+
+![Bear in Symbiote Suit](showcase/examples/bear_symbiote.png)
+
+**Fox - Classic Suit at Dusk**
+
+![Fox in Spider-Man Suit](showcase/examples/fox_classic.png)
+
+All images generated with `enhance_prompt: true`, showcasing how simple descriptions become photorealistic, cinematic masterpieces with dramatic lighting, detailed textures, and professional composition.
+
 ## 🚀 Quick Start
 
 ### Prerequisites

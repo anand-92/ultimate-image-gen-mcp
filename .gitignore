@@ -58,6 +58,12 @@ generated_images/
 *.jpeg
 *.webp
 
+# Exception: Allow showcase images
+!showcase/**/*.png
+!showcase/**/*.jpg
+!showcase/**/*.jpeg
+!showcase/**/*.webp
+
 # Logs
 *.log
 logs/
