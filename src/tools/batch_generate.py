@@ -48,7 +48,7 @@ async def batch_generate_images(
     validate_batch_size(batch_size, MAX_BATCH_SIZE)
 
     # Prepare results
-    results = {
+    results: dict[str, Any] = {
         "success": True,
         "total_prompts": len(prompts),
         "batch_size": batch_size,
@@ -96,8 +96,9 @@ async def batch_generate_images(
                 )
             else:
                 results["completed"] += 1
+                result_dict = result if isinstance(result, dict) else {}  # type: ignore[arg-type]
                 results["results"].append(
-                    {"prompt_index": prompt_index, "prompt": batch[j], **result}
+                    {"prompt_index": prompt_index, "prompt": batch[j], **result_dict}
                 )
 
     return results

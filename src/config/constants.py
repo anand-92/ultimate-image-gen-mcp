@@ -3,7 +3,6 @@ Constants and model definitions for Gemini 3 Pro Image API.
 """
 
 from pathlib import Path
-from typing import Final
 
 # Gemini Models (using official Google GenAI SDK)
 GEMINI_MODELS = {

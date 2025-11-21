@@ -114,7 +114,7 @@ async def generate_image_tool(
         )
 
         # Prepare response
-        response = {
+        response: dict[str, Any] = {
             "success": True,
             "model": model,
             "prompt": prompt,

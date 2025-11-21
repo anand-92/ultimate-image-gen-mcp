@@ -4,6 +4,7 @@ Configuration settings for the Ultimate Gemini MCP server.
 
 import os
 from pathlib import Path
+from typing import Any
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -88,12 +89,16 @@ class APIConfig(BaseSettings):
 
     # Image settings
     default_aspect_ratio: str = Field(default="1:1", description="Default aspect ratio")
-    default_image_size: str = Field(default=DEFAULT_IMAGE_SIZE, description="Default image size (1K, 2K, 4K)")
+    default_image_size: str = Field(
+        default=DEFAULT_IMAGE_SIZE, description="Default image size (1K, 2K, 4K)"
+    )
     default_output_format: str = Field(default="png", description="Default output format")
     enable_google_search: bool = Field(default=False, description="Enable Google Search grounding")
-    response_modalities: list[str] = Field(default=["TEXT", "IMAGE"], description="Response modalities")
+    response_modalities: list[str] = Field(
+        default=["TEXT", "IMAGE"], description="Response modalities"
+    )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         """Initialize API configuration with fallback for API key."""
         super().__init__(**kwargs)
         # Fallback to GOOGLE_API_KEY if GEMINI_API_KEY not set
@@ -112,7 +117,7 @@ class APIConfig(BaseSettings):
 class Settings:
     """Combined settings for the server."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.server = ServerConfig.from_env()
         self.api = APIConfig.from_env()
 

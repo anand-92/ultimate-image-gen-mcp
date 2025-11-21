@@ -56,9 +56,8 @@ class ImageResult:
         """Generate clean, short filename."""
         timestamp = self.timestamp.strftime("%Y%m%d_%H%M%S")
         # Shorten model name
-        model_short = (
-            self.model.replace("gemini-3-pro-image-preview", "gemini3")
-            .replace("imagen-4-", "img4-")
+        model_short = self.model.replace("gemini-3-pro-image-preview", "gemini3").replace(
+            "imagen-4-", "img4-"
         )
         # Sanitize and shorten prompt (max 30 chars)
         prompt_snippet = sanitize_filename(self.prompt[:30])
@@ -154,10 +153,9 @@ class ImageService:
 
         return results
 
-
     def _build_enhancement_context(self, params: dict[str, Any]) -> dict[str, Any]:
         """Build context for prompt enhancement."""
-        context = {}
+        context: dict[str, Any] = {}
 
         if "reference_images" in params and params["reference_images"]:
             context["has_reference_images"] = True

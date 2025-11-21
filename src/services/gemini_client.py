@@ -96,7 +96,7 @@ class GeminiClient:
             # Build image config (SDK 1.52+ supports both aspect_ratio and image_size)
             image_config = types.ImageConfig(
                 aspect_ratio=aspect_ratio if aspect_ratio else None,
-                image_size=image_size if image_size else None
+                image_size=image_size if image_size else None,
             )
 
             # Build generation config
@@ -123,8 +123,8 @@ class GeminiClient:
                     self.client.models.generate_content,
                     model=model_id,
                     contents=contents,
-                    config=config
-                )
+                    config=config,
+                ),
             )
 
             # Extract images, thoughts, and text from response
@@ -145,7 +145,7 @@ class GeminiClient:
             }
 
             # Include grounding metadata if Google Search was used
-            if enable_google_search and hasattr(response, 'grounding_metadata'):
+            if enable_google_search and hasattr(response, "grounding_metadata"):
                 result["grounding_metadata"] = response.grounding_metadata
 
             return result
@@ -176,11 +176,11 @@ class GeminiClient:
         model_id = GEMINI_MODELS.get(model, model)
 
         try:
-            config_args = {}
+            config_args: dict[str, Any] = {}
             if system_instruction:
                 config_args["system_instruction"] = system_instruction
 
-            config = types.GenerateContentConfig(**config_args) if config_args else None
+            config = types.GenerateContentConfig(**config_args) if config_args else None  # type: ignore[arg-type]
 
             # Run in executor since genai SDK is synchronous
             loop = asyncio.get_event_loop()
@@ -190,12 +190,12 @@ class GeminiClient:
                     self.client.models.generate_content,
                     model=model_id,
                     contents=prompt,
-                    config=config
-                )
+                    config=config,
+                ),
             )
 
             # Extract text from response
-            return response.text
+            return response.text or ""
 
         except Exception as e:
             logger.error(f"Gemini text generation failed: {e}")
@@ -213,46 +213,40 @@ class GeminiClient:
         - text: List of text strings
         - thoughts: List of thought objects with images and text
         """
-        images = []
-        text_parts = []
-        thoughts = []
+        images: list[str] = []
+        text_parts: list[str] = []
+        thoughts: list[dict[str, Any]] = []
 
         try:
             # Iterate through all parts in the response
             for part in response.parts:
                 # Check if this is a thought (thinking process)
-                is_thought = getattr(part, 'thought', False)
+                is_thought = getattr(part, "thought", False)
 
                 # Extract image data using SDK's as_image() method
-                if hasattr(part, 'inline_data'):
+                if hasattr(part, "inline_data"):
                     try:
                         image = part.as_image()
                         if image:
                             # Convert PIL Image to base64
                             buffer = io.BytesIO()
-                            image.save(buffer, format='PNG')
+                            image.save(buffer, format="PNG")
                             image_b64 = base64.b64encode(buffer.getvalue()).decode()
 
                             if is_thought:
-                                thoughts.append({
-                                    "type": "image",
-                                    "data": image_b64,
-                                    "index": len(thoughts)
-                                })
+                                thoughts.append(
+                                    {"type": "image", "data": image_b64, "index": len(thoughts)}
+                                )
                             else:
                                 images.append(image_b64)
-                                logger.debug(f"Extracted image from response")
+                                logger.debug("Extracted image from response")
                     except Exception as e:
                         logger.warning(f"Could not extract image from part: {e}")
 
                 # Extract text
-                if hasattr(part, 'text') and part.text:
+                if hasattr(part, "text") and part.text:
                     if is_thought:
-                        thoughts.append({
-                            "type": "text",
-                            "data": part.text,
-                            "index": len(thoughts)
-                        })
+                        thoughts.append({"type": "text", "data": part.text, "index": len(thoughts)})
                     else:
                         text_parts.append(part.text)
 
@@ -273,13 +267,9 @@ class GeminiClient:
 
         # Try to determine error type from message
         if "authentication" in error_msg.lower() or "api key" in error_msg.lower():
-            raise AuthenticationError(
-                "Authentication failed. Please check your Gemini API key."
-            )
+            raise AuthenticationError("Authentication failed. Please check your Gemini API key.")
         elif "rate limit" in error_msg.lower() or "quota" in error_msg.lower():
-            raise RateLimitError(
-                "Rate limit exceeded. Please try again later."
-            )
+            raise RateLimitError("Rate limit exceeded. Please try again later.")
         elif "safety" in error_msg.lower() or "blocked" in error_msg.lower():
             raise ContentPolicyError(
                 "Content was blocked by safety filters. Please modify your prompt."
