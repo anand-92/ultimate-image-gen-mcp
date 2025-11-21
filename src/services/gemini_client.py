@@ -246,7 +246,8 @@ class GeminiClient:
                             logger.info(f"Successfully got PIL image: {image.size}")
                             # Convert PIL Image to base64
                             buffer = io.BytesIO()
-                            image.save(buffer, format="PNG")
+                            # Save as PNG - use positional argument instead of keyword
+                            image.save(buffer, "PNG")
                             image_b64 = base64.b64encode(buffer.getvalue()).decode()
 
                             if is_thought:
