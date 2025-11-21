@@ -237,29 +237,31 @@ class GeminiClient:
                 # Check if this is a thought (thinking process)
                 is_thought = getattr(part, "thought", False)
 
-                # Extract image data using SDK's as_image() method
-                if hasattr(part, "inline_data"):
+                # Extract image data from inline_data
+                if hasattr(part, "inline_data") and part.inline_data:
                     try:
-                        logger.info(f"Part {idx} has inline_data, attempting to extract image...")
-                        image = part.as_image()
-                        if image:
-                            logger.info(f"Successfully got PIL image: {image.size}")
-                            # Convert PIL Image to base64
-                            buffer = io.BytesIO()
-                            # Save as PNG - use positional argument instead of keyword
-                            image.save(buffer, "PNG")
-                            image_b64 = base64.b64encode(buffer.getvalue()).decode()
+                        logger.info(f"Part {idx} has inline_data, extracting...")
+                        # Get the raw image data (bytes) from inline_data.data
+                        inline_data = part.inline_data
+                        image_bytes = inline_data.data
 
-                            if is_thought:
-                                logger.info(f"Adding to thoughts (is_thought={is_thought})")
-                                thoughts.append(
-                                    {"type": "image", "data": image_b64, "index": len(thoughts)}
-                                )
-                            else:
-                                logger.info(f"Adding to images (is_thought={is_thought})")
-                                images.append(image_b64)
+                        # Convert to PIL Image to ensure it's valid
+                        pil_image = Image.open(io.BytesIO(image_bytes))
+                        logger.info(f"Successfully loaded PIL image: {pil_image.size}")
+
+                        # Convert PIL Image to base64
+                        buffer = io.BytesIO()
+                        pil_image.save(buffer, format="PNG")
+                        image_b64 = base64.b64encode(buffer.getvalue()).decode()
+
+                        if is_thought:
+                            logger.info(f"Adding to thoughts (is_thought={is_thought})")
+                            thoughts.append(
+                                {"type": "image", "data": image_b64, "index": len(thoughts)}
+                            )
                         else:
-                            logger.warning(f"Part {idx}: as_image() returned None")
+                            logger.info(f"Adding to images (is_thought={is_thought})")
+                            images.append(image_b64)
                     except Exception as e:
                         logger.error(f"Could not extract image from part {idx}: {e}", exc_info=True)
 
