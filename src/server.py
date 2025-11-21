@@ -3,8 +3,8 @@
 Ultimate Gemini MCP Server - Main Entry Point
 
 Unified MCP server supporting:
-- Gemini 2.5 Flash Image (with prompt enhancement and editing)
-- Imagen 3, 4, and 4-Ultra (with advanced controls)
+- Gemini 3 Pro Image (with 4K resolution, reasoning, prompt enhancement and editing)
+- Imagen 4, 4-Fast, and 4-Ultra (with advanced controls)
 - Batch processing, prompt templates, and comprehensive features
 """
 
@@ -60,15 +60,18 @@ def create_app() -> FastMCP:
 
             models_info = {
                 "gemini": {
-                    "gemini-2.5-flash-image": {
-                        "name": "Gemini 2.5 Flash Image",
-                        "description": "Advanced image generation with editing and prompt enhancement",
+                    "gemini-3-pro-image-preview": {
+                        "name": "Gemini 3 Pro Image",
+                        "description": "Advanced image generation with 4K resolution, reasoning, and editing",
                         "features": [
+                            "Native 4K resolution",
+                            "Advanced reasoning capabilities",
                             "Prompt enhancement",
                             "Image editing",
                             "Character consistency",
                             "Multi-image blending",
                             "World knowledge integration",
+                            "Grounded generation with Google Search",
                         ],
                         "default": True,
                     }

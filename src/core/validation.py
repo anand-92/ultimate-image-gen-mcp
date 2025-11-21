@@ -10,8 +10,6 @@ from ..config.constants import (
     ALL_MODELS,
     ASPECT_RATIOS,
     IMAGE_FORMATS,
-    MAX_IMAGES_PER_REQUEST,
-    MAX_NEGATIVE_PROMPT_LENGTH,
     MAX_PROMPT_LENGTH,
 )
 from .exceptions import ValidationError
@@ -25,15 +23,6 @@ def validate_prompt(prompt: str) -> None:
     if len(prompt) > MAX_PROMPT_LENGTH:
         raise ValidationError(
             f"Prompt too long: {len(prompt)} characters (max {MAX_PROMPT_LENGTH})"
-        )
-
-
-def validate_negative_prompt(negative_prompt: str | None) -> None:
-    """Validate negative prompt text."""
-    if negative_prompt and len(negative_prompt) > MAX_NEGATIVE_PROMPT_LENGTH:
-        raise ValidationError(
-            f"Negative prompt too long: {len(negative_prompt)} characters "
-            f"(max {MAX_NEGATIVE_PROMPT_LENGTH})"
         )
 
 
@@ -51,29 +40,11 @@ def validate_aspect_ratio(aspect_ratio: str) -> None:
         raise ValidationError(f"Invalid aspect ratio '{aspect_ratio}'. Available: {available}")
 
 
-def validate_number_of_images(num: int) -> None:
-    """Validate number of images to generate."""
-    if not isinstance(num, int) or num < 1:
-        raise ValidationError(f"Number of images must be at least 1, got {num}")
-
-    if num > MAX_IMAGES_PER_REQUEST:
-        raise ValidationError(f"Number of images exceeds maximum: {num} > {MAX_IMAGES_PER_REQUEST}")
-
-
 def validate_image_format(format_str: str) -> None:
     """Validate image format."""
     if format_str.lower() not in IMAGE_FORMATS:
         available = ", ".join(IMAGE_FORMATS.keys())
         raise ValidationError(f"Invalid image format '{format_str}'. Available: {available}")
-
-
-def validate_seed(seed: int | None) -> None:
-    """Validate seed value."""
-    if seed is not None:
-        if not isinstance(seed, int):
-            raise ValidationError(f"Seed must be an integer, got {type(seed).__name__}")
-        if seed < 0:
-            raise ValidationError(f"Seed must be non-negative, got {seed}")
 
 
 def validate_file_path(path: str) -> Path:

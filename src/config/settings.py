@@ -10,8 +10,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .constants import (
     DEFAULT_ENHANCEMENT_MODEL,
-    DEFAULT_GEMINI_MODEL,
-    DEFAULT_IMAGEN_MODEL,
+    DEFAULT_IMAGE_SIZE,
+    DEFAULT_MODEL,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_TIMEOUT,
     MAX_BATCH_SIZE,
@@ -66,11 +66,8 @@ class APIConfig(BaseSettings):
     )
 
     # Model settings
-    default_gemini_model: str = Field(
-        default=DEFAULT_GEMINI_MODEL, description="Default Gemini model"
-    )
-    default_imagen_model: str = Field(
-        default=DEFAULT_IMAGEN_MODEL, description="Default Imagen model"
+    default_model: str = Field(
+        default=DEFAULT_MODEL, description="Default Gemini 3 Pro Image model"
     )
     enhancement_model: str = Field(
         default=DEFAULT_ENHANCEMENT_MODEL, description="Model for prompt enhancement"
@@ -91,7 +88,10 @@ class APIConfig(BaseSettings):
 
     # Image settings
     default_aspect_ratio: str = Field(default="1:1", description="Default aspect ratio")
+    default_image_size: str = Field(default=DEFAULT_IMAGE_SIZE, description="Default image size (1K, 2K, 4K)")
     default_output_format: str = Field(default="png", description="Default output format")
+    enable_google_search: bool = Field(default=False, description="Enable Google Search grounding")
+    response_modalities: list[str] = Field(default=["TEXT", "IMAGE"], description="Response modalities")
 
     def __init__(self, **kwargs):
         """Initialize API configuration with fallback for API key."""

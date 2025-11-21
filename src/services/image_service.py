@@ -1,6 +1,6 @@
 """
-Unified image service that orchestrates Gemini and Imagen APIs.
-Provides a consistent interface for image generation regardless of the underlying model.
+Image service for Gemini 3 Pro Image API.
+Provides interface for image generation using Gemini 3 Pro Image.
 """
 
 import base64
@@ -9,11 +9,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..config.constants import GEMINI_MODELS, IMAGEN_MODELS
+from ..config.constants import GEMINI_MODELS
 from ..core import sanitize_filename
 from ..core.exceptions import ImageProcessingError
 from .gemini_client import GeminiClient
-from .imagen_client import ImagenClient
 from .prompt_enhancer import PromptEnhancer
 
 logger = logging.getLogger(__name__)
@@ -56,8 +55,11 @@ class ImageResult:
     def _generate_filename(self) -> str:
         """Generate clean, short filename."""
         timestamp = self.timestamp.strftime("%Y%m%d_%H%M%S")
-        # Shorten model name (e.g., gemini-2.5-flash-image -> gemini-flash)
-        model_short = self.model.replace("gemini-2.5-flash-image", "gemini-flash").replace("imagen-4-", "img4-")
+        # Shorten model name
+        model_short = (
+            self.model.replace("gemini-3-pro-image-preview", "gemini3")
+            .replace("imagen-4-", "img4-")
+        )
         # Sanitize and shorten prompt (max 30 chars)
         prompt_snippet = sanitize_filename(self.prompt[:30])
         index_str = f"_{self.index + 1}" if self.index > 0 else ""
@@ -69,14 +71,14 @@ class ImageResult:
 
 
 class ImageService:
-    """Unified service for image generation using Gemini or Imagen."""
+    """Service for image generation using Gemini 3 Pro Image."""
 
     def __init__(self, api_key: str, *, enable_enhancement: bool = True, timeout: int = 60):
         """
         Initialize image service.
 
         Args:
-            api_key: API key for Google AI services
+            api_key: API key for Gemini API
             enable_enhancement: Enable automatic prompt enhancement
             timeout: Request timeout in seconds
         """
@@ -84,9 +86,8 @@ class ImageService:
         self.enable_enhancement = enable_enhancement
         self.timeout = timeout
 
-        # Initialize clients
+        # Initialize Gemini client
         self.gemini_client = GeminiClient(api_key, timeout)
-        self.imagen_client = ImagenClient(api_key, timeout)
         self.prompt_enhancer: PromptEnhancer | None = None
 
         if enable_enhancement:
@@ -97,26 +98,23 @@ class ImageService:
         self, prompt: str, *, model: str | None = None, enhance_prompt: bool = True, **kwargs: Any
     ) -> list[ImageResult]:
         """
-        Generate images using the appropriate API.
+        Generate images using Gemini 3 Pro Image API.
 
         Args:
             prompt: Text prompt for image generation
-            model: Model to use (auto-detected if None)
+            model: Model to use (default: gemini-3-pro-image-preview)
             enhance_prompt: Whether to enhance the prompt
-            **kwargs: Additional parameters (aspect_ratio, number_of_images, etc.)
+            **kwargs: Additional parameters (aspect_ratio, reference_images, etc.)
 
         Returns:
             List of ImageResult objects
         """
-        # Detect which API to use based on model
+        # Use Gemini 3 Pro Image
         if model is None:
-            model = "gemini-2.5-flash-image"  # Default to Gemini
+            model = "gemini-3-pro-image-preview"
 
-        is_gemini = model in GEMINI_MODELS
-        is_imagen = model in IMAGEN_MODELS
-
-        if not is_gemini and not is_imagen:
-            raise ValueError(f"Unknown model: {model}")
+        if model not in GEMINI_MODELS:
+            raise ValueError(f"Unknown model: {model}. Only Gemini 3 Pro Image is supported.")
 
         # Enhance prompt if enabled
         original_prompt = prompt
@@ -132,11 +130,8 @@ class ImageService:
             except Exception as e:
                 logger.warning(f"Prompt enhancement failed: {e}")
 
-        # Generate images using appropriate API
-        if is_gemini:
-            return await self._generate_with_gemini(prompt, model, original_prompt, kwargs)
-        else:
-            return await self._generate_with_imagen(prompt, model, original_prompt, kwargs)
+        # Generate images using Gemini API
+        return await self._generate_with_gemini(prompt, model, original_prompt, kwargs)
 
     async def _generate_with_gemini(
         self, prompt: str, model: str, original_prompt: str, params: dict[str, Any]
@@ -159,49 +154,23 @@ class ImageService:
 
         return results
 
-    async def _generate_with_imagen(
-        self, prompt: str, model: str, original_prompt: str, params: dict[str, Any]
-    ) -> list[ImageResult]:
-        """Generate images using Imagen API."""
-        response = await self.imagen_client.generate_image(prompt=prompt, model=model, **params)
-
-        images = response["images"]
-        results = []
-
-        for i, image_data in enumerate(images):
-            result = ImageResult(
-                image_data=image_data,
-                prompt=original_prompt,
-                model=model,
-                index=i,
-                metadata={"enhanced_prompt": prompt, "api": "imagen", **params},
-            )
-            results.append(result)
-
-        return results
 
     def _build_enhancement_context(self, params: dict[str, Any]) -> dict[str, Any]:
         """Build context for prompt enhancement."""
         context = {}
 
-        if "input_image" in params:
-            context["is_editing"] = True
-
-        if params.get("maintainCharacterConsistency"):
-            context["maintain_character_consistency"] = True
-
-        if params.get("blendImages"):
-            context["blend_images"] = True
-
-        if params.get("useWorldKnowledge"):
-            context["use_world_knowledge"] = True
+        if "reference_images" in params and params["reference_images"]:
+            context["has_reference_images"] = True
+            context["num_reference_images"] = len(params["reference_images"])
 
         if "aspect_ratio" in params:
             context["aspect_ratio"] = params["aspect_ratio"]
 
+        if params.get("enable_google_search"):
+            context["use_google_search"] = True
+
         return context
 
     async def close(self) -> None:
-        """Close all clients."""
+        """Close Gemini client."""
         await self.gemini_client.close()
-        await self.imagen_client.close()

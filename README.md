@@ -1,23 +1,24 @@
-# Ultimate Gemini MCP Server 🎨
+# Gemini 3 Pro Image MCP Server 🎨
 
-> The most comprehensive MCP server for AI image generation, unifying Google's Gemini 2.5 Flash Image and Imagen 4/Ultra models with advanced features.
+> Professional MCP server for Google's Gemini 3 Pro Image - state-of-the-art image generation with advanced reasoning, high-resolution output, and Google Search grounding.
 
 ## ✨ Features
 
-### Unified API Support
-- **Gemini 2.5 Flash Image**: Advanced image generation with AI-powered prompt enhancement and editing
-- **Imagen 4 & 4-Ultra**: High-quality image generation with professional controls
-- Automatic model detection and parameter optimization
+### Gemini 3 Pro Image Capabilities
+- **High-Resolution Output**: Generate images in 1K, 2K, and 4K resolutions
+- **Advanced Text Rendering**: Create legible, stylized text in infographics, menus, diagrams, and marketing assets
+- **Up to 14 Reference Images**: Mix up to 14 reference images (6 objects + 5 humans) for consistent style and characters
+- **Google Search Grounding**: Use real-time data from Google Search (weather, stocks, events, maps)
+- **Thinking Mode**: Model uses reasoning process to refine composition before generating final output
 
 ### Advanced Capabilities
 - 🤖 **AI Prompt Enhancement**: Automatically optimize prompts using Gemini Flash for superior results
-- 🎨 **Image Editing**: Modify existing images with natural language instructions
+- 🔍 **Google Search Integration**: Generate images based on real-time information
+- 🎨 **Reference Images**: Use up to 14 images for style consistency and character preservation
+- 📐 **Flexible Aspect Ratios**: Support for 10 aspect ratios (1:1, 16:9, 9:16, 3:2, 4:3, 4:5, 5:4, 2:3, 3:4, 21:9)
+- 💭 **Thought Process Visibility**: See the model's thinking process (interim images and reasoning)
 - 🚀 **Batch Processing**: Generate multiple images efficiently with parallel processing
-- 🎯 **Character Consistency**: Maintain character features across multiple generations
-- 🌍 **World Knowledge**: Integrate accurate real-world context for historical/factual subjects
-- 🎭 **Multi-Image Blending**: Combine multiple visual elements naturally
-- 🎲 **Reproducible Results**: Use seeds for consistent generation (Imagen)
-- ⚫ **Negative Prompts**: Specify what to avoid in images (Imagen)
+- 🎯 **Dual Modalities**: Get both text explanations and images in responses
 
 ### Production Ready
 - Comprehensive error handling and validation
@@ -25,90 +26,55 @@
 - Detailed logging and debugging
 - MCP resources for configuration and model information
 
-## 🎬 Showcase - See It In Action
+## 🎬 Showcase - Gemini 3 Pro Image Features
 
-> **Simple prompt → Mind-blowing results** - Watch AI prompt enhancement transform basic ideas into cinematic masterpieces.
+> **Gemini 3 Pro Image** - Experience state-of-the-art image generation with advanced reasoning and high-resolution output.
 
-### Example: Animal + Spider-Man Raimi Suit Blends
+### Key Features in Action
 
-All images generated with **16:9 aspect ratio** and **AI prompt enhancement enabled**.
+All images can be generated with **4K resolution** and **AI prompt enhancement enabled**.
 
-#### Original Prompt
+### Example Use Cases
+
+**1. High-Resolution Professional Assets**
 ```
-a black shiba inu blended with spiderman raimi suit version
-```
-
-**Generated with Imagen 4**
-
-![Shiba Inu Spider-Man - Imagen 4](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/shiba-spiderman-imagen4.png)
-
-- **Model**: `imagen-4`
-- **Enhanced Prompt**: "A wide cinematic landscape composition capturing a hyper-detailed, photorealistic portrait of a Black Shiba Inu merged with the aesthetic of the Raimi Spider-Man suit. The dog's dense, black fur integrates seamlessly with the suit's signature sculpted, rubberized texture, featuring raised silver webbing across its body and limbs..."
-- **Size**: 1.47 MB
-- **Result**: Cinematic composition with dramatic chiaroscuro lighting
-
-**Generated with Imagen 4 Ultra**
-
-![Shiba Inu Spider-Man - Imagen 4 Ultra](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/shiba-spiderman-imagen4-ultra.png)
-
-- **Model**: `imagen-4-ultra`
-- **Enhanced Prompt**: "A hyper-detailed, photorealistic depiction of a black Shiba Inu fully integrated with the aesthetic and materials of the Tobey Maguire Raimi Spider-Man suit... dramatic, high-contrast Chiaroscuro lighting... heroic, mid-action leap across a rain-slicked urban rooftop..."
-- **Size**: 1.59 MB
-- **Result**: Ultra-high quality with enhanced material textures and volumetric fog
-
-**Generated with Gemini 2.5 Flash (Nanobanana)**
-
-![Shiba Inu Spider-Man - Gemini Flash](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/shiba-spiderman-gemini-flash.png)
-
-- **Model**: `gemini-2.5-flash-image`
-- **Enhanced Prompt**: "Cinematic wide landscape... formidable Black Shiba Inu hybrid... seamlessly merged with the iconic deep crimson and midnight black textures of the Raimi Spider-Man suit... dynamic, heroic three-quarter pose, mid-leap..."
-- **Size**: 1.63 MB
-- **Result**: Dynamic hero pose with intense atmospheric effects
-
----
-
-#### Original Prompt
-```
-an american wirehair cat blended with spiderman raimi suit version
+Generate a 4K image of "modern office interior with natural lighting"
+- Model: gemini-3-pro-image-preview
+- Image Size: 4K
+- Aspect Ratio: 16:9
 ```
 
-**Generated with Gemini 2.5 Flash (Nanobanana)**
-
-![American Wirehair Spider-Man - Gemini Flash](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/wirehair-spiderman-gemini-flash.png)
-
-- **Model**: `gemini-2.5-flash-image`
-- **Enhanced Prompt**: "An imposing figure: an American Wirehair Cat hybrid, its naturally coarse, mottled fur seamlessly integrated with the iconic Sam Raimi Spider-Man suit... perched atop a rain-slicked, Gothic skyscraper gargoyle... high-contrast chiaroscuro, with powerful blue and red rim lighting..."
-- **Size**: 1.62 MB
-- **Result**: Gothic noir aesthetic with dramatic gargoyle perch
-
----
-
-#### Original Prompt
+**2. Real-Time Data Visualization**
 ```
-a maine coon cat blended with spiderman raimi suit version
+Generate an image with Google Search grounding:
+"Visualize the current weather forecast for the next 5 days in San Francisco as a clean, modern weather chart. Add a visual on what I should wear each day"
+- Enable Google Search: true
+- Aspect Ratio: 16:9
 ```
 
-**Generated with Gemini 2.5 Flash (Nanobanana)**
+**3. Reference Image Consistency**
+```
+Use reference images to maintain consistent characters:
+- Provide up to 5 human reference images
+- Provide up to 6 object reference images
+- Generate "An office group photo of these people, they are making funny faces"
+```
 
-![Maine Coon Spider-Man - Gemini Flash](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/mainecoon-spiderman-gemini-flash.png)
+**4. Advanced Text Rendering**
+```
+Generate infographics, menus, or diagrams with legible text:
+"Create a restaurant menu with elegant typography showing appetizers, mains, and desserts"
+- Image Size: 2K
+- Aspect Ratio: 3:4
+```
 
-- **Model**: `gemini-2.5-flash-image`
-- **Enhanced Prompt**: "A hyper-detailed, photorealistic cinematic composition of a gigantic Maine Coon cat fused with the specific aesthetics of the Sam Raimi Spider-Man suit... dense fur coat mimics the suit's precise material textures... dramatic low-angle (worm's-eye view) to emphasize monumental scale..."
-- **Size**: 1.61 MB
-- **Result**: Emphasizes gigantic scale perfect for Maine Coon's natural size
+### 🔥 Why Gemini 3 Pro Image Is Powerful
 
----
-
-### 🔥 Why These Results Are Incredible
-
-1. **Simple Input → Professional Output**: Just a basic description produces cinematic, professionally-lit compositions
-2. **Model Variety**: Compare Imagen 4, Imagen 4 Ultra, and Gemini 2.5 Flash results side-by-side
-3. **AI Enhancement Magic**: See how prompt enhancement adds lighting, composition, and technical details
-4. **Consistent Quality**: All images feature dramatic chiaroscuro lighting, atmospheric effects, and hyper-detailed textures
-5. **Model-Specific Strengths**:
-   - Imagen 4 Ultra: Maximum quality and material detail
-   - Gemini 2.5 Flash: Dynamic poses and creative interpretations
-   - Imagen 4: Balanced speed and quality
+1. **State-of-the-Art Quality**: Built-in generation capabilities up to 4K resolution
+2. **Advanced Reasoning**: Thinking mode refines composition before final output
+3. **Real-Time Grounding**: Google Search integration for accurate, current data
+4. **Character Consistency**: Use up to 14 reference images for maintaining style
+5. **Professional Features**: Advanced text rendering for infographics and marketing
 
 ## 🚀 Quick Start
 
@@ -223,42 +189,48 @@ Add to Cursor's MCP configuration (`.cursor/mcp.json`):
 
 ## 🎯 Available Models
 
-### Gemini Models
-- **gemini-2.5-flash-image** (default): Advanced image generation with prompt enhancement and editing
-
-### Imagen Models
-- **imagen-4**: High-quality image generation with improved text rendering
-- **imagen-4-fast**: Optimized for faster generation with good quality
-- **imagen-4-ultra**: Highest quality with best prompt adherence and professional results
+### Gemini 3 Pro Image
+- **gemini-3-pro-image-preview** (default): State-of-the-art image generation optimized for professional asset production with:
+  - Built-in 1K, 2K, and 4K resolution support
+  - Advanced text rendering capabilities
+  - Up to 14 reference images for consistency
+  - Google Search grounding for real-time data
+  - Thinking mode with reasoning process
+  - Support for both TEXT and IMAGE response modalities
 
 ## 🛠️ Tools
 
 ### `generate_image`
 
-Generate images using any supported model with comprehensive parameters.
+Generate professional images using Gemini 3 Pro Image with advanced features.
 
 **Parameters:**
-- `prompt` (required): Text description of the image
-- `model`: Model to use (default: gemini-2.5-flash-image)
-- `enhance_prompt`: Automatically enhance prompt (default: true)
-- `number_of_images`: Number of images to generate, 1-4 (default: 1)
-- `aspect_ratio`: Aspect ratio like 1:1, 16:9, 9:16 (default: 1:1)
+- `prompt` (required): Text description of the image to generate
+- `model`: Model to use (default: gemini-3-pro-image-preview)
+- `enhance_prompt`: Automatically enhance prompt using AI (default: true)
+- `aspect_ratio`: Aspect ratio like 1:1, 16:9, 9:16, 3:2, 4:5, etc. (default: 1:1)
+- `image_size`: Resolution: 1K, 2K, or 4K (default: 1K)
 - `output_format`: Image format: png, jpeg, webp (default: png)
+- `reference_image_paths`: List of paths to reference images (up to 14 total)
+  - Maximum 6 object images for high-fidelity inclusion
+  - Maximum 5 human images for character consistency
+- `enable_google_search`: Enable Google Search grounding for real-time data (default: false)
+- `response_modalities`: Response types like ["TEXT", "IMAGE"] (default: both)
 
-**Gemini-Specific Parameters:**
-- `input_image_path`: Path to input image for editing
-- `maintain_character_consistency`: Maintain character features across generations
-- `blend_images`: Enable multi-image blending
-- `use_world_knowledge`: Use real-world knowledge for context
-
-**Imagen-Specific Parameters:**
-- `person_generation`: Person policy: dont_allow, allow_adult, allow_all
-- `negative_prompt`: What to avoid in the image
-- `seed`: Random seed for reproducibility
-
-**Example:**
+**Examples:**
 ```
-Generate an image of "a serene mountain landscape at sunset with a lake reflection" using imagen-4-ultra
+1. Basic image generation:
+   Generate an image of "a serene mountain landscape at sunset with a lake reflection"
+
+2. High-resolution with specific aspect ratio:
+   Generate a 4K image of "modern minimalist architecture" with aspect_ratio 16:9
+
+3. With Google Search grounding:
+   Generate an image with Google Search enabled: "Current weather map for New York City"
+
+4. With reference images:
+   Generate an image with reference_image_paths: ["/path/person1.png", "/path/person2.png"]
+   and prompt: "An office group photo of these people making funny faces"
 ```
 
 ### `batch_generate`
@@ -292,43 +264,40 @@ When enabled (default), the server uses Gemini Flash to automatically enhance yo
 
 This significantly improves image quality without requiring you to be a prompt engineering expert!
 
-### Image Editing
+### Google Search Grounding
 
-Use natural language to edit existing images (Gemini model):
+Generate images based on real-time data:
+
+```
+Generate an image with Google Search enabled:
+- prompt: "Visualize the current weather forecast for San Francisco as a modern chart"
+- enable_google_search: true
+```
+
+The response will include grounding metadata with search sources used.
+
+### Reference Images for Consistency
+
+Maintain consistent characters and objects across generations:
 
 ```
 Generate an image with:
-- prompt: "Add a red scarf to the person"
-- input_image_path: "/path/to/image.jpg"
+- prompt: "An office group photo of these people, they are making funny faces"
+- reference_image_paths: ["/path/person1.png", "/path/person2.png", "/path/person3.png"]
+- aspect_ratio: "5:4"
+- image_size: "2K"
 ```
 
-### Character Consistency
+You can provide up to 14 reference images (max 6 objects, max 5 humans).
 
-Generate the same character in different scenes:
+### High-Resolution Assets
 
-```
-Generate an image of "a young wizard in a library, studying ancient books"
-with maintain_character_consistency: true
-```
-
-Then:
-```
-Generate an image of "the same young wizard, now in a magical forest"
-with maintain_character_consistency: true
-```
-
-### Reproducible Results
-
-Use seeds for consistent generation (Imagen models):
+Generate professional 4K assets:
 
 ```
-Generate an image with:
-- prompt: "a futuristic cityscape"
-- model: "imagen-4-ultra"
-- seed: 42
+Generate a 4K image of "minimalist logo design for a tech startup"
+with image_size: "4K" and aspect_ratio: "1:1"
 ```
-
-Running with the same seed will produce the same image.
 
 ## ⚙️ Configuration
 
@@ -340,8 +309,9 @@ Running with the same seed will produce the same image.
 | `OUTPUT_DIR` | Directory for generated images | `generated_images` |
 | `ENABLE_PROMPT_ENHANCEMENT` | Enable AI prompt enhancement | `true` |
 | `ENABLE_BATCH_PROCESSING` | Enable batch processing | `true` |
-| `DEFAULT_GEMINI_MODEL` | Default Gemini model | `gemini-2.5-flash-image` |
-| `DEFAULT_IMAGEN_MODEL` | Default Imagen model | `imagen-4-ultra` |
+| `DEFAULT_MODEL` | Default model | `gemini-3-pro-image-preview` |
+| `DEFAULT_IMAGE_SIZE` | Default resolution | `1K` |
+| `ENABLE_GOOGLE_SEARCH` | Enable Google Search grounding | `false` |
 | `REQUEST_TIMEOUT` | API request timeout (seconds) | `60` |
 | `MAX_BATCH_SIZE` | Maximum parallel batch size | `8` |
 | `LOG_LEVEL` | Logging level | `INFO` |
@@ -380,19 +350,20 @@ View current server configuration.
 - Style variations
 - Scene composition
 
-## 📊 Comparison
+## 📊 Gemini 3 Pro Image Features
 
-| Feature | Gemini 2.5 Flash | Imagen 4/Fast/Ultra |
-|---------|------------------|---------------------|
-| Prompt Enhancement | ✅ Built-in | ✅ Built-in |
-| Image Editing | ✅ Yes | ❌ No |
-| Character Consistency | ✅ Yes | ❌ No |
-| Multi-Image Blending | ✅ Yes | ❌ No |
-| Negative Prompts | ❌ No | ✅ Yes |
-| Seed-based Reproducibility | ❌ No | ✅ Yes |
-| Person Generation Controls | ❌ No | ✅ Yes |
-| Speed Options | Standard | Fast/Standard/Ultra |
-| Best For | Editing, iteration, context-aware | Photorealism, final quality, speed |
+| Feature | Support | Details |
+|---------|---------|---------|
+| Resolution Options | ✅ 1K, 2K, 4K | Built-in high-resolution generation |
+| Reference Images | ✅ Up to 14 | 6 objects + 5 humans for consistency |
+| Google Search Grounding | ✅ Real-time data | Weather, stocks, events, maps |
+| Thinking Mode | ✅ Advanced reasoning | Visible thought process and interim images |
+| Text Rendering | ✅ Advanced | Legible text in infographics, menus, diagrams |
+| Aspect Ratios | ✅ 10 options | Full flexibility for any format |
+| Response Modalities | ✅ TEXT + IMAGE | Dual output modes |
+| Prompt Enhancement | ✅ Built-in | AI-powered optimization |
+| Thought Signatures | ✅ Automatic | Preserved across multi-turn interactions |
+| Best For | Professional assets, marketing, real-time visualization |
 
 ## 🐛 Troubleshooting
 

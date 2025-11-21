@@ -1,32 +1,20 @@
 """
-Constants and model definitions for both Gemini and Imagen APIs.
+Constants and model definitions for Gemini 3 Pro Image API.
 """
 
 from typing import Final
 
-# API Endpoints
-GEMINI_API_BASE: Final[str] = "https://generativelanguage.googleapis.com/v1beta"
-IMAGEN_API_BASE: Final[str] = "https://generativelanguage.googleapis.com/v1beta"
-
-# Gemini Models (generateContent API)
+# Gemini Models (using official Google GenAI SDK)
 GEMINI_MODELS = {
-    "gemini-2.5-flash-image": "gemini-2.5-flash-image",
+    "gemini-3-pro-image-preview": "gemini-3-pro-image-preview",
     "gemini-flash-latest": "gemini-flash-latest",  # For prompt enhancement (non-image)
 }
 
-# Imagen Models (predict API)
-IMAGEN_MODELS = {
-    "imagen-4": "models/imagen-4.0-generate-001",
-    "imagen-4-fast": "models/imagen-4.0-fast-generate-001",
-    "imagen-4-ultra": "models/imagen-4.0-ultra-generate-001",
-}
-
 # All available models
-ALL_MODELS = {**GEMINI_MODELS, **IMAGEN_MODELS}
+ALL_MODELS = GEMINI_MODELS
 
 # Default models
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-image"
-DEFAULT_IMAGEN_MODEL = "imagen-4-ultra"
+DEFAULT_MODEL = "gemini-3-pro-image-preview"
 DEFAULT_ENHANCEMENT_MODEL = "gemini-flash-latest"
 
 # Aspect ratios
@@ -51,18 +39,21 @@ IMAGE_FORMATS = {
     "webp": "image/webp",
 }
 
-# Person generation options (Imagen API)
-PERSON_GENERATION_OPTIONS = [
-    "dont_allow",
-    "allow_adult",
-    "allow_all",
-]
+# Image sizes (Gemini 3 Pro Image)
+IMAGE_SIZES = ["1K", "2K", "4K"]
+DEFAULT_IMAGE_SIZE = "1K"
+
+# Reference images limits (Gemini 3 Pro Image)
+MAX_REFERENCE_IMAGES = 14
+MAX_OBJECT_IMAGES = 6
+MAX_HUMAN_IMAGES = 5
+
+# Response modalities
+RESPONSE_MODALITIES = ["TEXT", "IMAGE"]
 
 # Generation limits
-MAX_IMAGES_PER_REQUEST = 4
 MAX_BATCH_SIZE = 8
 MAX_PROMPT_LENGTH = 8192
-MAX_NEGATIVE_PROMPT_LENGTH = 1024
 
 # File size limits
 MAX_IMAGE_SIZE_MB = 20

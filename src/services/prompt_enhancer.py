@@ -26,7 +26,8 @@ Follow these guidelines:
 5. For portraits: describe features, expressions, clothing
 6. For scenes: describe environment, weather, time of day
 7. Keep prompts concise but detailed (aim for 100-300 words)
-8. Output ONLY the enhanced prompt, no explanations"""
+8. NEVER use hex color values (like #FF0000). Always describe colors using natural language (e.g., "dark red", "neon blue", "warm amber", "deep crimson")
+9. Output ONLY the enhanced prompt, no explanations"""
 
 
 class PromptEnhancer:

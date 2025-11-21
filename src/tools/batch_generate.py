@@ -124,7 +124,7 @@ def register_batch_generate_tool(mcp_server: Any) -> None:
 
         Args:
             prompts: List of text descriptions for image generation
-            model: Model to use for all images (default: gemini-2.5-flash-image)
+            model: Model to use for all images (default: gemini-3-pro-image-preview)
             enhance_prompt: Enhance all prompts automatically (default: True)
             aspect_ratio: Aspect ratio for all images (default: 1:1)
             output_format: Image format for all images (default: png)

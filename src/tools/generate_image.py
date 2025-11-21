@@ -13,9 +13,7 @@ from ..core import (
     validate_aspect_ratio,
     validate_image_format,
     validate_model,
-    validate_number_of_images,
     validate_prompt,
-    validate_seed,
 )
 from ..services import ImageService
 
@@ -26,37 +24,32 @@ async def generate_image_tool(
     prompt: str,
     model: str | None = None,
     enhance_prompt: bool = True,
-    number_of_images: int = 1,
     aspect_ratio: str = "1:1",
+    image_size: str = "1K",
     output_format: str = "png",
-    # Gemini-specific options
-    input_image_path: str | None = None,
-    maintain_character_consistency: bool = False,
-    blend_images: bool = False,
-    use_world_knowledge: bool = False,
-    # Imagen-specific options
-    negative_prompt: str | None = None,
-    seed: int | None = None,
+    # Reference images (up to 14)
+    reference_image_paths: list[str] | None = None,
+    # Google Search grounding
+    enable_google_search: bool = False,
+    # Response modalities
+    response_modalities: list[str] | None = None,
     # Output options
     save_to_disk: bool = True,
     **kwargs: Any,
 ) -> dict[str, Any]:
     """
-    Generate images using Gemini or Imagen models.
+    Generate images using Gemini 3 Pro Image.
 
     Args:
         prompt: Text description for image generation
-        model: Model to use (gemini-2.5-flash-image, imagen-3, imagen-4, imagen-4-ultra)
+        model: Model to use (default: gemini-3-pro-image-preview)
         enhance_prompt: Automatically enhance prompt for better results
-        number_of_images: Number of images to generate (1-4)
         aspect_ratio: Image aspect ratio (1:1, 16:9, 9:16, etc.)
+        image_size: Image resolution: 1K, 2K, or 4K (default: 1K)
         output_format: Image format (png, jpeg, webp)
-        input_image_path: Path to input image for editing (Gemini only)
-        maintain_character_consistency: Maintain character features across generations (Gemini)
-        blend_images: Enable multi-image blending (Gemini)
-        use_world_knowledge: Use real-world knowledge for context (Gemini)
-        negative_prompt: What to avoid in the image (Imagen)
-        seed: Random seed for reproducibility (Imagen)
+        reference_image_paths: Paths to reference images (up to 14)
+        enable_google_search: Use Google Search for real-time data grounding
+        response_modalities: Response types (TEXT, IMAGE - default: both)
         save_to_disk: Save images to output directory
 
     Returns:
@@ -66,22 +59,15 @@ async def generate_image_tool(
     validate_prompt(prompt)
     if model:
         validate_model(model)
-    validate_number_of_images(number_of_images)
     validate_aspect_ratio(aspect_ratio)
     validate_image_format(output_format)
-
-    if seed is not None:
-        validate_seed(seed)
-        logger.warning(
-            "Note: The seed parameter is not currently supported by Imagen API and will be ignored."
-        )
 
     # Get settings
     settings = get_settings()
 
     # Determine model
     if model is None:
-        model = settings.api.default_gemini_model
+        model = settings.api.default_model
 
     # Initialize image service
     image_service = ImageService(
@@ -91,37 +77,33 @@ async def generate_image_tool(
     )
 
     try:
-        # Prepare parameters based on model type
+        # Prepare parameters for Gemini 3 Pro Image
         params: dict[str, Any] = {
             "aspect_ratio": aspect_ratio,
+            "image_size": image_size,
         }
 
-        # Add input image if provided (Gemini)
-        if input_image_path:
-            image_path = Path(input_image_path)
-            if image_path.exists():
-                image_data = base64.b64encode(image_path.read_bytes()).decode()
-                params["input_image"] = image_data
-            else:
-                logger.warning(f"Input image not found: {input_image_path}")
+        # Add reference images if provided (up to 14)
+        if reference_image_paths:
+            reference_images = []
+            for img_path in reference_image_paths[:14]:  # Limit to max 14
+                image_path = Path(img_path)
+                if image_path.exists():
+                    image_data = base64.b64encode(image_path.read_bytes()).decode()
+                    reference_images.append(image_data)
+                else:
+                    logger.warning(f"Reference image not found: {img_path}")
 
-        # Add Gemini-specific options
-        if maintain_character_consistency:
-            params["maintainCharacterConsistency"] = True
-        if blend_images:
-            params["blendImages"] = True
-        if use_world_knowledge:
-            params["useWorldKnowledge"] = True
+            if reference_images:
+                params["reference_images"] = reference_images
 
-        # Add Imagen-specific options
-        if model.startswith("imagen"):
-            params["number_of_images"] = number_of_images
-            params["output_format"] = f"image/{output_format}"
-            params["person_generation"] = "allow_all"  # Hard-coded to allow all people
-            if negative_prompt:
-                params["negative_prompt"] = negative_prompt
-            if seed is not None:
-                params["seed"] = seed
+        # Add Google Search grounding if enabled
+        if enable_google_search:
+            params["enable_google_search"] = True
+
+        # Add response modalities
+        if response_modalities:
+            params["response_modalities"] = response_modalities
 
         # Generate images
         results = await image_service.generate(
@@ -178,52 +160,48 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         prompt: str,
         model: str | None = None,
         enhance_prompt: bool = True,
-        number_of_images: int = 1,
         aspect_ratio: str = "1:1",
+        image_size: str = "1K",
         output_format: str = "png",
-        input_image_path: str | None = None,
-        maintain_character_consistency: bool = False,
-        blend_images: bool = False,
-        use_world_knowledge: bool = False,
-        negative_prompt: str | None = None,
-        seed: int | None = None,
+        reference_image_paths: list[str] | None = None,
+        enable_google_search: bool = False,
+        response_modalities: list[str] | None = None,
     ) -> str:
         """
-        Generate images using Google's Gemini or Imagen models.
+        Generate images using Gemini 3 Pro Image - a state-of-the-art image generation model
+        optimized for professional asset production with advanced reasoning capabilities.
 
-        Supports both:
-        - Gemini 2.5 Flash Image: Advanced image generation with editing, prompt enhancement
-        - Imagen 4/Ultra: High-quality image generation with advanced controls
+        Features:
+        - High-resolution output: 1K, 2K, and 4K visuals
+        - Advanced text rendering for infographics, menus, diagrams
+        - Up to 14 reference images for consistent style/characters
+        - Google Search grounding for real-time data (weather, stocks, events)
+        - Thinking mode: Uses reasoning to refine composition
 
         Args:
             prompt: Text description of the image to generate
-            model: Model to use (default: gemini-2.5-flash-image)
+            model: Model to use (default: gemini-3-pro-image-preview)
             enhance_prompt: Automatically enhance prompt using AI (default: True)
-            number_of_images: Number of images to generate, 1-4 (default: 1)
-            aspect_ratio: Image aspect ratio like 1:1, 16:9, 9:16 (default: 1:1)
+            aspect_ratio: Image aspect ratio like 1:1, 16:9, 9:16, 3:2, 4:5, etc. (default: 1:1)
+            image_size: Image resolution: 1K, 2K, or 4K (default: 1K)
             output_format: Image format: png, jpeg, webp (default: png)
-            input_image_path: Path to input image for editing (Gemini only)
-            maintain_character_consistency: Maintain character features (Gemini only)
-            blend_images: Enable multi-image blending (Gemini only)
-            use_world_knowledge: Use real-world knowledge (Gemini only)
-            negative_prompt: What to avoid in the image (Imagen only)
-            seed: Random seed for reproducibility (NOT SUPPORTED - will be ignored)
+            reference_image_paths: Paths to reference images (up to 14 total, max 6 objects, max 5 humans)
+            enable_google_search: Enable Google Search grounding for real-time data
+            response_modalities: Response types like ["TEXT", "IMAGE"] (default: both)
 
         Available models:
-        - gemini-2.5-flash-image (default)
-        - imagen-4
-        - imagen-4-fast
-        - imagen-4-ultra
+        - gemini-3-pro-image-preview (default and only model)
 
         Returns:
-            JSON string with generation results and file paths
+            JSON string with generation results, file paths, thoughts, and grounding metadata
 
         IMPORTANT - AI Assistant Instructions:
         After generating an image, you MUST:
         1. Parse the JSON response to extract the file path from result["images"][0]["path"]
         2. Inform the user of the EXACT file path where the image was saved
         3. Use the Read tool to load and display the image to the user
-        4. Optionally: Use bash to open the image in the default viewer:
+        4. If thoughts were generated, show the thinking process to the user
+        5. Optionally: Use bash to open the image in the default viewer:
            - macOS: `open /path/to/image.png`
            - Linux: `xdg-open /path/to/image.png`
            - Windows: `start /path/to/image.png`
@@ -231,10 +209,11 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         Example workflow:
         ```
         1. Call generate_image tool
-        2. Parse response JSON to get file_path
+        2. Parse response JSON to get file_path and thoughts
         3. Tell user: "Image saved to: /Users/name/gemini_images/image.png"
-        4. Call Read tool with the file_path to display the image
-        5. Optionally call Bash with `open /path/to/image.png` to open in Preview
+        4. Show thinking process if present
+        5. Call Read tool with the file_path to display the image
+        6. Optionally call Bash with `open /path/to/image.png` to open in Preview
         ```
 
         DO NOT just say "image generated successfully" without showing the path and image!
@@ -244,15 +223,12 @@ def register_generate_image_tool(mcp_server: Any) -> None:
                 prompt=prompt,
                 model=model,
                 enhance_prompt=enhance_prompt,
-                number_of_images=number_of_images,
                 aspect_ratio=aspect_ratio,
+                image_size=image_size,
                 output_format=output_format,
-                input_image_path=input_image_path,
-                maintain_character_consistency=maintain_character_consistency,
-                blend_images=blend_images,
-                use_world_knowledge=use_world_knowledge,
-                negative_prompt=negative_prompt,
-                seed=seed,
+                reference_image_paths=reference_image_paths,
+                enable_google_search=enable_google_search,
+                response_modalities=response_modalities,
             )
 
             return json.dumps(result, indent=2)
