@@ -1,3 +1,5 @@
+![Ultimate Gemini MCP Banner](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/banner.png)
+
 # Gemini 3 Pro Image MCP Server 🎨
 
 > Professional MCP server for Google's Gemini 3 Pro Image - state-of-the-art image generation with advanced reasoning, high-resolution output, and Google Search grounding.
