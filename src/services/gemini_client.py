@@ -93,31 +93,17 @@ class GeminiClient:
             if response_modalities is None:
                 response_modalities = ["TEXT", "IMAGE"]
 
-            # Build image config
-            # Note: image_size parameter support depends on SDK version
-            image_config_kwargs = {}
-            if aspect_ratio:
-                image_config_kwargs["aspect_ratio"] = aspect_ratio
-
-            # Try to add image_size if supported by SDK
-            try:
-                if image_size:
-                    image_config_kwargs["image_size"] = image_size
-                image_config = types.ImageConfig(**image_config_kwargs)
-            except Exception:
-                # Fall back without image_size if not supported
-                logger.debug(f"image_size parameter not supported in SDK, using only aspect_ratio")
-                image_config_kwargs.pop("image_size", None)
-                image_config = types.ImageConfig(**image_config_kwargs) if image_config_kwargs else None
+            # Build image config (SDK 1.52+ supports both aspect_ratio and image_size)
+            image_config = types.ImageConfig(
+                aspect_ratio=aspect_ratio if aspect_ratio else None,
+                image_size=image_size if image_size else None
+            )
 
             # Build generation config
             config_args: dict[str, Any] = {
                 "response_modalities": response_modalities,
+                "image_config": image_config,
             }
-
-            # Only add image_config if we have one
-            if image_config is not None:
-                config_args["image_config"] = image_config
 
             # Add Google Search grounding if enabled
             if enable_google_search:
