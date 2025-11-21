@@ -111,9 +111,10 @@ class GeminiClient:
 
             config = types.GenerateContentConfig(**config_args)
 
-            logger.debug(f"Generating image with model: {model_id}")
-            logger.debug(f"Contents: {len(contents)} items")
-            logger.debug(f"Config: {config}")
+            logger.info(f"Generating image with model: {model_id}")
+            logger.info(f"Contents: {len(contents)} items")
+            logger.info(f"Config: {config}")
+            logger.info(f"Aspect ratio: {aspect_ratio}, Image size: {image_size}")
 
             # Generate content using official SDK (run in executor since it's synchronous)
             loop = asyncio.get_event_loop()
@@ -134,7 +135,15 @@ class GeminiClient:
             text_parts = extraction_result["text"]
 
             if not images and "IMAGE" in response_modalities:
-                logger.error("No images extracted from response")
+                logger.error(
+                    f"No images extracted from response. Response has {len(response.parts)} parts"
+                )
+                logger.error(f"Thoughts extracted: {len(thoughts)}, Text parts: {len(text_parts)}")
+                logger.error(f"Response_modalities: {response_modalities}")
+                for idx, part in enumerate(response.parts):
+                    logger.error(
+                        f"  Part {idx}: has_inline_data={hasattr(part, 'inline_data')}, has_text={hasattr(part, 'text')}, thought={getattr(part, 'thought', None)}, thought_sig={hasattr(part, 'thought_signature')}"
+                    )
                 raise APIError("No image data found in Gemini API response")
 
             result = {
@@ -219,10 +228,10 @@ class GeminiClient:
         thoughts: list[dict[str, Any]] = []
 
         try:
-            logger.debug(f"Response has {len(response.parts)} parts")
+            logger.info(f"Response has {len(response.parts)} parts")
             # Iterate through all parts in the response
             for idx, part in enumerate(response.parts):
-                logger.debug(
+                logger.info(
                     f"Part {idx}: type={type(part)}, has_inline_data={hasattr(part, 'inline_data')}, has_text={hasattr(part, 'text')}, has_thought={hasattr(part, 'thought')}, has_thought_sig={hasattr(part, 'thought_signature')}"
                 )
                 # Check if this is a thought (thinking process)
@@ -231,22 +240,27 @@ class GeminiClient:
                 # Extract image data using SDK's as_image() method
                 if hasattr(part, "inline_data"):
                     try:
+                        logger.info(f"Part {idx} has inline_data, attempting to extract image...")
                         image = part.as_image()
                         if image:
+                            logger.info(f"Successfully got PIL image: {image.size}")
                             # Convert PIL Image to base64
                             buffer = io.BytesIO()
                             image.save(buffer, format="PNG")
                             image_b64 = base64.b64encode(buffer.getvalue()).decode()
 
                             if is_thought:
+                                logger.info(f"Adding to thoughts (is_thought={is_thought})")
                                 thoughts.append(
                                     {"type": "image", "data": image_b64, "index": len(thoughts)}
                                 )
                             else:
+                                logger.info(f"Adding to images (is_thought={is_thought})")
                                 images.append(image_b64)
-                                logger.debug("Extracted image from response")
+                        else:
+                            logger.warning(f"Part {idx}: as_image() returned None")
                     except Exception as e:
-                        logger.warning(f"Could not extract image from part: {e}")
+                        logger.error(f"Could not extract image from part {idx}: {e}", exc_info=True)
 
                 # Extract text
                 if hasattr(part, "text") and part.text:
@@ -256,9 +270,9 @@ class GeminiClient:
                         text_parts.append(part.text)
 
         except Exception as e:
-            logger.warning(f"Error extracting content from response: {e}")
+            logger.error(f"Error extracting content from response: {e}", exc_info=True)
 
-        logger.debug(
+        logger.info(
             f"Extraction complete: {len(images)} images, {len(text_parts)} text parts, {len(thoughts)} thoughts"
         )
         return {
