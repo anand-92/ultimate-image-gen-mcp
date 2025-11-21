@@ -131,8 +131,7 @@ Add to your `claude_desktop_config.json`:
       "command": "uvx",
       "args": ["ultimate-gemini-mcp"],
       "env": {
-        "GEMINI_API_KEY": "your-api-key-here",
-        "OUTPUT_DIR": "/path/to/your/images"
+        "GEMINI_API_KEY": "your-api-key-here"
       }
     }
   }
@@ -141,9 +140,9 @@ Add to your `claude_desktop_config.json`:
 
 **Important Notes:**
 
-1. **OUTPUT_DIR is required** when using `uvx` to avoid read-only file system errors. Set it to an absolute path where you want generated images saved:
-   - **macOS**: `"/Users/yourusername/gemini_images"`
-   - **Windows**: `"C:\\Users\\YourUsername\\gemini_images"`
+1. **Images are automatically saved** to `~/gemini_images` (your home directory). You can optionally set `OUTPUT_DIR` to customize this location:
+   - **macOS**: `"OUTPUT_DIR": "/Users/yourusername/custom_folder"`
+   - **Windows**: `"OUTPUT_DIR": "C:\\Users\\YourUsername\\custom_folder"`
 
 2. **uvx path issues on macOS**: If you get `spawn uvx ENOENT` errors, use the full path to uvx:
    ```json
@@ -157,14 +156,13 @@ Add to your `claude_desktop_config.json`:
 ### With Claude Code (VS Code)
 
 ```bash
-# Add MCP server to Claude Code (with required OUTPUT_DIR)
+# Add MCP server to Claude Code
 claude mcp add ultimate-gemini \
   --env GEMINI_API_KEY=your-api-key \
-  --env OUTPUT_DIR=/path/to/your/images \
   -- uvx ultimate-gemini-mcp
 ```
 
-**Note**: Replace `/path/to/your/images` with an absolute path to where you want images saved.
+**Note**: Images are automatically saved to `~/gemini_images`. To customize, add `--env OUTPUT_DIR=/your/custom/path`.
 
 ### With Cursor
 
@@ -177,15 +175,14 @@ Add to Cursor's MCP configuration (`.cursor/mcp.json`):
       "command": "uvx",
       "args": ["ultimate-gemini-mcp"],
       "env": {
-        "GEMINI_API_KEY": "your-api-key-here",
-        "OUTPUT_DIR": "/path/to/your/images"
+        "GEMINI_API_KEY": "your-api-key-here"
       }
     }
   }
 }
 ```
 
-**Note**: Set `OUTPUT_DIR` to an absolute path where you want generated images saved.
+**Note**: Images are automatically saved to `~/gemini_images`. Optionally add `"OUTPUT_DIR": "/your/custom/path"` to customize.
 
 ## 🎯 Available Models
 
@@ -306,7 +303,7 @@ with image_size: "4K" and aspect_ratio: "1:1"
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `GEMINI_API_KEY` | Google Gemini API key (required) | - |
-| `OUTPUT_DIR` | Directory for generated images | `generated_images` |
+| `OUTPUT_DIR` | Directory for generated images | `~/gemini_images` |
 | `ENABLE_PROMPT_ENHANCEMENT` | Enable AI prompt enhancement | `true` |
 | `ENABLE_BATCH_PROCESSING` | Enable batch processing | `true` |
 | `DEFAULT_MODEL` | Default model | `gemini-3-pro-image-preview` |
@@ -375,13 +372,13 @@ View current server configuration.
   ```
 - Find your uvx location with: `which uvx`
 
-### "[Errno 30] Read-only file system: 'generated_images'"
-- **Cause**: When using `uvx`, the default directory is in a read-only cache location
-- **Solution**: Add `OUTPUT_DIR` to your MCP config:
+### Custom output directory
+- **Default**: Images are automatically saved to `~/gemini_images` in your home directory
+- **Customize**: Set `OUTPUT_DIR` in your MCP config if you want a different location:
   ```json
   "env": {
     "GEMINI_API_KEY": "your-key",
-    "OUTPUT_DIR": "/Users/yourusername/gemini_images"
+    "OUTPUT_DIR": "/your/custom/path"
   }
   ```
 

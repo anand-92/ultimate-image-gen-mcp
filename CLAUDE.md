@@ -57,8 +57,8 @@ export GEMINI_API_KEY=your_key_here
 # Optional: Enable debug logging
 export LOG_LEVEL=DEBUG
 
-# Optional: Change output directory
-export OUTPUT_DIR=/path/to/output
+# Optional: Change output directory (default: ~/gemini_images)
+# export OUTPUT_DIR=/your/custom/path
 ```
 
 ## Architecture

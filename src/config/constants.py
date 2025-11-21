@@ -2,6 +2,7 @@
 Constants and model definitions for Gemini 3 Pro Image API.
 """
 
+from pathlib import Path
 from typing import Final
 
 # Gemini Models (using official Google GenAI SDK)
@@ -65,4 +66,4 @@ ENHANCEMENT_TIMEOUT = 30
 BATCH_TIMEOUT = 120
 
 # Output settings
-DEFAULT_OUTPUT_DIR = "generated_images"
+DEFAULT_OUTPUT_DIR = str(Path.home() / "gemini_images")
