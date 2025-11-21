@@ -88,27 +88,27 @@ See the power of AI prompt enhancement! Simple prompts are automatically transfo
 
 **Wolf - Black Symbiote Suit**
 
-![Wolf in Black Symbiote Suit](showcase/examples/wolf_symbiote.png)
+![Wolf in Black Symbiote Suit](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/wolf_symbiote.png)
 
 **Lion - Classic Red & Blue Suit**
 
-![Lion in Classic Spider-Man Suit](showcase/examples/lion_classic.png)
+![Lion in Classic Spider-Man Suit](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/lion_classic.png)
 
 **Black Panther - Symbiote Suit**
 
-![Panther in Symbiote Suit](showcase/examples/panther_symbiote.png)
+![Panther in Symbiote Suit](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/panther_symbiote.png)
 
 **Eagle - Classic Suit in Flight**
 
-![Eagle in Spider-Man Suit](showcase/examples/eagle_classic.png)
+![Eagle in Spider-Man Suit](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/eagle_classic.png)
 
 **Grizzly Bear - Symbiote Suit**
 
-![Bear in Symbiote Suit](showcase/examples/bear_symbiote.png)
+![Bear in Symbiote Suit](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/bear_symbiote.png)
 
 **Fox - Classic Suit at Dusk**
 
-![Fox in Spider-Man Suit](showcase/examples/fox_classic.png)
+![Fox in Spider-Man Suit](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/fox_classic.png)
 
 All images generated with `enhance_prompt: true`, showcasing how simple descriptions become photorealistic, cinematic masterpieces with dramatic lighting, detailed textures, and professional composition.
 
@@ -118,32 +118,32 @@ Gemini 3 Pro Image excels at creating incredibly realistic images of people in u
 
 **Jensen Huang - GPU Surfing**
 
-![Jensen surfing on GPU through cyberpunk city](showcase/examples/jensen_gpu_surfing.png)
+![Jensen surfing on GPU through cyberpunk city](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/jensen_gpu_surfing.png)
 *Riding a giant NVIDIA GPU chip through a neon-lit cyberpunk cityscape*
 
 **Elon Musk - Mars Chess Match**
 
-![Elon playing chess with robot on Mars](showcase/examples/elon_mars_chess.png)
+![Elon playing chess with robot on Mars](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/elon_mars_chess.png)
 *Playing chess with a humanoid robot on the surface of Mars, Earth visible in background*
 
 **Jensen Huang - GPU Kitchen**
 
-![Jensen cooking with GPU appliances](showcase/examples/jensen_gpu_kitchen.png)
+![Jensen cooking with GPU appliances](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/jensen_gpu_kitchen.png)
 *Cooking breakfast in a high-tech kitchen where all appliances are GPUs with RGB lighting*
 
 **Elon Musk - Cybertruck Symphony**
 
-![Elon conducting Cybertruck orchestra](showcase/examples/elon_cybertruck_symphony.png)
+![Elon conducting Cybertruck orchestra](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/elon_cybertruck_symphony.png)
 *Conducting a symphony orchestra made entirely of Tesla Cybertrucks in a concert hall*
 
 **Jensen Huang - Underwater Data Center**
 
-![Jensen scuba diving in data center](showcase/examples/jensen_underwater_datacenter.png)
+![Jensen scuba diving in data center](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/jensen_underwater_datacenter.png)
 *Scuba diving in an underwater data center surrounded by glowing servers and tropical fish*
 
 **Elon Musk - SpaceX Skateboarding**
 
-![Elon skateboarding at SpaceX](showcase/examples/elon_spacex_skateboard.png)
+![Elon skateboarding at SpaceX](https://raw.githubusercontent.com/anand-92/ultimate-image-gen-mcp/main/showcase/examples/elon_spacex_skateboard.png)
 *Skateboarding through the SpaceX factory with a Starship rocket in the background*
 
 These images demonstrate the model's exceptional ability to:
