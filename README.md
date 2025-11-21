@@ -112,6 +112,47 @@ See the power of AI prompt enhancement! Simple prompts are automatically transfo
 
 All images generated with `enhance_prompt: true`, showcasing how simple descriptions become photorealistic, cinematic masterpieces with dramatic lighting, detailed textures, and professional composition.
 
+## 📸 Photorealistic Capabilities
+
+Gemini 3 Pro Image excels at creating incredibly realistic images of people in unusual and imaginative scenarios:
+
+**Jensen Huang - GPU Surfing**
+
+![Jensen surfing on GPU through cyberpunk city](showcase/examples/jensen_gpu_surfing.png)
+*Riding a giant NVIDIA GPU chip through a neon-lit cyberpunk cityscape*
+
+**Elon Musk - Mars Chess Match**
+
+![Elon playing chess with robot on Mars](showcase/examples/elon_mars_chess.png)
+*Playing chess with a humanoid robot on the surface of Mars, Earth visible in background*
+
+**Jensen Huang - GPU Kitchen**
+
+![Jensen cooking with GPU appliances](showcase/examples/jensen_gpu_kitchen.png)
+*Cooking breakfast in a high-tech kitchen where all appliances are GPUs with RGB lighting*
+
+**Elon Musk - Cybertruck Symphony**
+
+![Elon conducting Cybertruck orchestra](showcase/examples/elon_cybertruck_symphony.png)
+*Conducting a symphony orchestra made entirely of Tesla Cybertrucks in a concert hall*
+
+**Jensen Huang - Underwater Data Center**
+
+![Jensen scuba diving in data center](showcase/examples/jensen_underwater_datacenter.png)
+*Scuba diving in an underwater data center surrounded by glowing servers and tropical fish*
+
+**Elon Musk - SpaceX Skateboarding**
+
+![Elon skateboarding at SpaceX](showcase/examples/elon_spacex_skateboard.png)
+*Skateboarding through the SpaceX factory with a Starship rocket in the background*
+
+These images demonstrate the model's exceptional ability to:
+- Generate photorealistic human likenesses
+- Blend reality with creative, surreal concepts
+- Maintain accurate lighting and perspective
+- Create detailed, believable environments
+- Handle complex compositions with multiple elements
+
 ## 🚀 Quick Start
 
 ### Prerequisites
