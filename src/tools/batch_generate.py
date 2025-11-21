@@ -70,7 +70,6 @@ async def batch_generate_images(
                 enhance_prompt=enhance_prompt,
                 aspect_ratio=aspect_ratio,
                 output_format=output_format,
-                number_of_images=1,
                 **shared_params,
             )
             for prompt in batch

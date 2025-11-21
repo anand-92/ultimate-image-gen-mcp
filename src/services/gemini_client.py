@@ -219,8 +219,10 @@ class GeminiClient:
         thoughts: list[dict[str, Any]] = []
 
         try:
+            logger.debug(f"Response has {len(response.parts)} parts")
             # Iterate through all parts in the response
-            for part in response.parts:
+            for idx, part in enumerate(response.parts):
+                logger.debug(f"Part {idx}: type={type(part)}, has_inline_data={hasattr(part, 'inline_data')}, has_text={hasattr(part, 'text')}, has_thought={hasattr(part, 'thought')}, has_thought_sig={hasattr(part, 'thought_signature')}")
                 # Check if this is a thought (thinking process)
                 is_thought = getattr(part, "thought", False)
 
@@ -254,6 +256,7 @@ class GeminiClient:
         except Exception as e:
             logger.warning(f"Error extracting content from response: {e}")
 
+        logger.debug(f"Extraction complete: {len(images)} images, {len(text_parts)} text parts, {len(thoughts)} thoughts")
         return {
             "images": images,
             "text": text_parts,
