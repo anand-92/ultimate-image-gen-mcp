@@ -25,7 +25,7 @@ async def generate_image_tool(
     model: str | None = None,
     enhance_prompt: bool = True,
     aspect_ratio: str = "1:1",
-    image_size: str = "1K",
+    image_size: str = "2K",
     output_format: str = "png",
     # Reference images (up to 14)
     reference_image_paths: list[str] | None = None,
@@ -45,7 +45,7 @@ async def generate_image_tool(
         model: Model to use (default: gemini-3-pro-image-preview)
         enhance_prompt: Automatically enhance prompt for better results
         aspect_ratio: Image aspect ratio (1:1, 16:9, 9:16, etc.)
-        image_size: Image resolution: 1K, 2K, or 4K (default: 1K)
+        image_size: Image resolution: 1K, 2K, or 4K (default: 2K)
         output_format: Image format (png, jpeg, webp)
         reference_image_paths: Paths to reference images (up to 14)
         enable_google_search: Use Google Search for real-time data grounding
@@ -161,7 +161,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
         model: str | None = None,
         enhance_prompt: bool = True,
         aspect_ratio: str = "1:1",
-        image_size: str = "1K",
+        image_size: str = "2K",
         output_format: str = "png",
         reference_image_paths: list[str] | None = None,
         enable_google_search: bool = False,
@@ -183,7 +183,7 @@ def register_generate_image_tool(mcp_server: Any) -> None:
             model: Model to use (default: gemini-3-pro-image-preview)
             enhance_prompt: Automatically enhance prompt using AI (default: True)
             aspect_ratio: Image aspect ratio like 1:1, 16:9, 9:16, 3:2, 4:5, etc. (default: 1:1)
-            image_size: Image resolution: 1K, 2K, or 4K (default: 1K)
+            image_size: Image resolution: 1K, 2K, or 4K (default: 2K)
             output_format: Image format: png, jpeg, webp (default: png)
             reference_image_paths: Paths to reference images (up to 14 total, max 6 objects, max 5 humans)
             enable_google_search: Enable Google Search grounding for real-time data

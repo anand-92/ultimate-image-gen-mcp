@@ -47,7 +47,7 @@ class GeminiClient:
         model: str = "gemini-3-pro-image-preview",
         reference_images: list[str] | None = None,
         aspect_ratio: str | None = None,
-        image_size: str = "1K",
+        image_size: str = "2K",
         response_modalities: list[str] | None = None,
         enable_google_search: bool = False,
         **kwargs: Any,
@@ -60,7 +60,7 @@ class GeminiClient:
             model: Model to use (default: gemini-3-pro-image-preview)
             reference_images: List of base64-encoded reference images (up to 14)
             aspect_ratio: Desired aspect ratio (optional)
-            image_size: Image resolution (1K, 2K, 4K - default: 1K)
+            image_size: Image resolution (1K, 2K, 4K - default: 2K)
             response_modalities: Response types (TEXT, IMAGE - default: ["TEXT", "IMAGE"])
             enable_google_search: Enable Google Search grounding for real-time data
             **kwargs: Additional parameters
@@ -94,16 +94,30 @@ class GeminiClient:
                 response_modalities = ["TEXT", "IMAGE"]
 
             # Build image config
-            image_config = types.ImageConfig(
-                image_size=image_size,
-                aspect_ratio=aspect_ratio if aspect_ratio else None
-            )
+            # Note: image_size parameter support depends on SDK version
+            image_config_kwargs = {}
+            if aspect_ratio:
+                image_config_kwargs["aspect_ratio"] = aspect_ratio
+
+            # Try to add image_size if supported by SDK
+            try:
+                if image_size:
+                    image_config_kwargs["image_size"] = image_size
+                image_config = types.ImageConfig(**image_config_kwargs)
+            except Exception:
+                # Fall back without image_size if not supported
+                logger.debug(f"image_size parameter not supported in SDK, using only aspect_ratio")
+                image_config_kwargs.pop("image_size", None)
+                image_config = types.ImageConfig(**image_config_kwargs) if image_config_kwargs else None
 
             # Build generation config
             config_args: dict[str, Any] = {
                 "response_modalities": response_modalities,
-                "image_config": image_config,
             }
+
+            # Only add image_config if we have one
+            if image_config is not None:
+                config_args["image_config"] = image_config
 
             # Add Google Search grounding if enabled
             if enable_google_search:

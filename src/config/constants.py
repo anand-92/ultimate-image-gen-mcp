@@ -42,7 +42,7 @@ IMAGE_FORMATS = {
 
 # Image sizes (Gemini 3 Pro Image)
 IMAGE_SIZES = ["1K", "2K", "4K"]
-DEFAULT_IMAGE_SIZE = "1K"
+DEFAULT_IMAGE_SIZE = "2K"
 
 # Reference images limits (Gemini 3 Pro Image)
 MAX_REFERENCE_IMAGES = 14

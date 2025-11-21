@@ -307,7 +307,7 @@ with image_size: "4K" and aspect_ratio: "1:1"
 | `ENABLE_PROMPT_ENHANCEMENT` | Enable AI prompt enhancement | `true` |
 | `ENABLE_BATCH_PROCESSING` | Enable batch processing | `true` |
 | `DEFAULT_MODEL` | Default model | `gemini-3-pro-image-preview` |
-| `DEFAULT_IMAGE_SIZE` | Default resolution | `1K` |
+| `DEFAULT_IMAGE_SIZE` | Default resolution | `2K` |
 | `ENABLE_GOOGLE_SEARCH` | Enable Google Search grounding | `false` |
 | `REQUEST_TIMEOUT` | API request timeout (seconds) | `60` |
 | `MAX_BATCH_SIZE` | Maximum parallel batch size | `8` |
